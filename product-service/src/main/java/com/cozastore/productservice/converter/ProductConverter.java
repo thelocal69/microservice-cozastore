@@ -1,10 +1,7 @@
 package com.cozastore.productservice.converter;
 
 import com.cozastore.productservice.dto.ProductDTO;
-import com.cozastore.productservice.model.CategoryModel;
-import com.cozastore.productservice.model.ColorModel;
 import com.cozastore.productservice.model.ProductModel;
-import com.cozastore.productservice.model.SizeModel;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -20,28 +17,9 @@ public class ProductConverter {
                 .imageUrl(productModel.getImageUrl())
                 .quantity(productModel.getQuantity())
                 .description(productModel.getDescription())
-                .category(
-                        productModel
-                                .getCategory()
-                                .stream()
-                                .map(CategoryModel::getName)
-                                .toString()
-                )
-                .status(productModel.getStatus())
-                .color(
-                        productModel
-                                .getColor()
-                                .stream()
-                                .map(ColorModel::getName)
-                                .toString()
-                )
-                .size(
-                        productModel
-                                .getSize()
-                                .stream()
-                                .map(SizeModel::getName)
-                                .toString()
-                )
+                .category(productModel.getCategory().getName())
+                .color(productModel.getColor().getName())
+                .size(productModel.getSize().getName())
                 .build();
     }
     public List<ProductDTO> toListProductDTO(List<ProductModel> productModelList){

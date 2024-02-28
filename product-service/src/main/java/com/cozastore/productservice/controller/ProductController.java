@@ -1,7 +1,7 @@
 package com.cozastore.productservice.controller;
 
 import com.cozastore.productservice.dto.ProductDTO;
-import com.cozastore.productservice.payload.ObjectResponse;
+import com.cozastore.productservice.payload.ResponseObject;
 import com.cozastore.productservice.service.IProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +21,10 @@ public class ProductController {
 
     @GetMapping()
     @Transactional(readOnly = true)
-    public ResponseEntity<ObjectResponse> getAllProduct(){
+    public ResponseEntity<ResponseObject> getAllProduct(){
         log.info("Get all is completed !");
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ObjectResponse(
+                new ResponseObject(
                     200,
                         "Get all is completed !",
                         this.productService.getAllProduct()
@@ -34,14 +34,44 @@ public class ProductController {
 
     @PostMapping()
     @Transactional(rollbackFor = Exception.class)
-    public ResponseEntity<ObjectResponse> createdProduct(@RequestBody ProductDTO productDTO){
+    public ResponseEntity<ResponseObject> createdProduct(@RequestBody ProductDTO productDTO){
         this.productService.upsert(productDTO);
         log.info("Created product is completed !");
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(
-                        new ObjectResponse(
+                        new ResponseObject(
                                 201,
                                 "Created product is completed !",
+                                ""
+                        )
+                );
+    }
+
+    @PutMapping()
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseEntity<ResponseObject> updateProduct(@RequestBody ProductDTO productDTO){
+        this.productService.upsert(productDTO);
+        log.info("Update product is completed !");
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(
+                        new ResponseObject(
+                                201,
+                                "Update product is completed !",
+                                ""
+                        )
+                );
+    }
+
+    @DeleteMapping()
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseEntity<ResponseObject> deleteProduct(@RequestBody ProductDTO productDTO){
+        this.productService.delete(productDTO);
+        log.info("Delete product is completed !");
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(
+                        new ResponseObject(
+                                200,
+                                "Delete product is completed !",
                                 ""
                         )
                 );

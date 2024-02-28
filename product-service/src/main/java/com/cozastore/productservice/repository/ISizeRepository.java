@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ISizeRepository extends MongoRepository<SizeModel, String> {
+    Boolean existsByName(String name);
+    SizeModel findByName(String name);
 }

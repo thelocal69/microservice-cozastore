@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Getter
 @Setter
@@ -26,7 +25,7 @@ public class ProductModel extends AbstractAuditingModel{
     private String description;
     private int quantity;
     private int status;
-    private List<CategoryModel> category;
-    private List<SizeModel> size;
-    private List<ColorModel> color;
+    private CategoryModel category;
+    private SizeModel size;
+    private ColorModel color;
 }

@@ -8,5 +8,5 @@ public interface IProductService {
     List<ProductDTO> getAllProduct();
     ProductDTO getProductById(Long id);
     void upsert(ProductDTO productDTO);
-    void delete(Long id);
+    void delete(ProductDTO productDTO);
 }

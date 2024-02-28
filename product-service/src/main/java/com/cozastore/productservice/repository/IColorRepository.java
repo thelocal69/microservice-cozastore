@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface IColorRepository extends MongoRepository<ColorModel, String> {
+    Boolean existsByName(String name);
+    ColorModel findByName(String name);
 }
