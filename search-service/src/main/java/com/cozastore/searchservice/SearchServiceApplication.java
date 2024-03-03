@@ -1,13 +1,12 @@
-package com.example.carouselservice;
+package com.cozastore.searchservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CarouselServiceApplication {
-
+public class SearchServiceApplication {
     public static void main(String[] args) {
-        SpringApplication.run(CarouselServiceApplication.class, args);
+        SpringApplication.run(SearchServiceApplication.class, args);
     }
 
 }

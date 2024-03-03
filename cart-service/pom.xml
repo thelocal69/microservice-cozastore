@@ -36,5 +36,24 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <artifactId>feign-okhttp</artifactId>
+            <groupId>io.github.openfeign</groupId>
+            <version>10.11</version>
+        </dependency>
+        <dependency>
+            <artifactId>feign-gson</artifactId>
+            <groupId>io.github.openfeign</groupId>
+            <version>10.11</version>
+        </dependency>
+        <dependency>
+            <artifactId>feign-slf4j</artifactId>
+            <groupId>io.github.openfeign</groupId>
+            <version>10.11</version>
+        </dependency>
+        <dependency>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+            <groupId>org.springframework.cloud</groupId>
+        </dependency>
     </dependencies>
 </project>
