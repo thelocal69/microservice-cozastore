@@ -1,11 +1,11 @@
 package com.cozastore.productservice.repository;
 
-import com.cozastore.productservice.model.CategoryModel;
+import com.cozastore.productservice.entity.CategoryEntity;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ICategoryRepository extends MongoRepository<CategoryModel, String> {
+public interface ICategoryRepository extends MongoRepository<CategoryEntity, String> {
     Boolean existsByName(String name);
-    CategoryModel findByName(String name);
+    CategoryEntity findByName(String name);
 }

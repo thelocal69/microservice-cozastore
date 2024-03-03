@@ -16,6 +16,11 @@
     <modules>
         <module>product-service</module>
         <module>order-service</module>
+        <module>carousel-service</module>
+        <module>user-service</module>
+        <module>blog-service</module>
+        <module>security-service</module>
+        <module>cart-service</module>
     </modules>
 
     <properties>

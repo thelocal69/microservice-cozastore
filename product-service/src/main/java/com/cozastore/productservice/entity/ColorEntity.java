@@ -1,4 +1,4 @@
-package com.cozastore.productservice.model;
+package com.cozastore.productservice.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,15 +7,17 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(value = "category")
-public class CategoryModel extends AbstractAuditingModel{
+@Document(collection = "color")
+public class ColorEntity extends AbstractAuditingEntity {
     @Id
     @Indexed(unique = true)
     private String id;
+    @Field(name = "name")
     private String name;
 }

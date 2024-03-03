@@ -1,4 +1,4 @@
-package com.cozastore.productservice.model;
+package com.cozastore.productservice.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.math.BigDecimal;
 
@@ -14,18 +15,27 @@ import java.math.BigDecimal;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(value = "product")
-public class ProductModel extends AbstractAuditingModel{
+@Document(collection = "product")
+public class ProductEntity extends AbstractAuditingEntity {
     @Id
     @Indexed(unique=true)
     private String id;
+    @Field(name = "productName")
     private String productName;
+    @Field(name = "imageUrl")
     private String imageUrl;
+    @Field(name = "price")
     private BigDecimal price;
+    @Field(name = "description")
     private String description;
+    @Field(name = "quantity")
     private int quantity;
+    @Field(name = "status")
     private int status;
-    private CategoryModel category;
-    private SizeModel size;
-    private ColorModel color;
+    @Field(name = "category")
+    private CategoryEntity category;
+    @Field(name = "size")
+    private SizeEntity size;
+    @Field(name = "color")
+    private ColorEntity color;
 }

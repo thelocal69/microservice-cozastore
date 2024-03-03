@@ -1,7 +1,7 @@
 package com.cozastore.productservice.converter;
 
 import com.cozastore.productservice.dto.CategoryDTO;
-import com.cozastore.productservice.model.CategoryModel;
+import com.cozastore.productservice.entity.CategoryEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class CategoryConverter {
-    public CategoryDTO toCategoryDTO(CategoryModel categoryModel){
+    public CategoryDTO toCategoryDTO(CategoryEntity categoryModel){
         return CategoryDTO
                 .builder()
                 .id(categoryModel.getId())
@@ -17,12 +17,12 @@ public class CategoryConverter {
                 .build();
     }
 
-    public List<CategoryDTO> toListCategoryDTO(List<CategoryModel> categoryModelList){
+    public List<CategoryDTO> toListCategoryDTO(List<CategoryEntity> categoryModelList){
         return categoryModelList.stream().map(this::toCategoryDTO).collect(Collectors.toList());
     }
 
-    public CategoryModel toCategoryModel(CategoryDTO categoryDTO){
-        CategoryModel categoryModel = new CategoryModel();
+    public CategoryEntity toCategoryModel(CategoryDTO categoryDTO){
+        CategoryEntity categoryModel = new CategoryEntity();
         categoryModel.setId(categoryDTO.getId());
         categoryModel.setName(categoryDTO.getName());
         return categoryModel;

@@ -1,4 +1,4 @@
-package com.cozastore.productservice.model;
+package com.cozastore.productservice.entity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,24 +8,24 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 @Getter
 @Setter
-public class AbstractAuditingModel {
+public class AbstractAuditingEntity {
     @CreatedBy
-    @Field("created_by")
+    @Field(name = "created_by")
     private String createdBy;
 
     @CreatedDate
-    @Field("created_date")
-    private Date createdDate;
+    @Field(name = "created_date")
+    private Timestamp createdDate;
 
     @LastModifiedBy
-    @Field("last_modified_by")
+    @Field(name = "last_modified_by")
     private String lastModifiedBy;
 
     @LastModifiedDate
-    @Field("last_modified_date")
-    private Date lastModifiedDate;
+    @Field(name = "last_modified_date")
+    private Timestamp lastModifiedDate;
 }

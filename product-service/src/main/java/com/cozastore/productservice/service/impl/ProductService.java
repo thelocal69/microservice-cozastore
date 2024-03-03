@@ -2,7 +2,7 @@ package com.cozastore.productservice.service.impl;
 
 import com.cozastore.productservice.converter.ProductConverter;
 import com.cozastore.productservice.dto.ProductDTO;
-import com.cozastore.productservice.model.ProductModel;
+import com.cozastore.productservice.entity.ProductEntity;
 import com.cozastore.productservice.repository.ICategoryRepository;
 import com.cozastore.productservice.repository.IColorRepository;
 import com.cozastore.productservice.repository.IProductRepository;
@@ -45,7 +45,7 @@ public class ProductService implements IProductService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void upsert(ProductDTO productDTO) {
-        ProductModel productModel = productConverter.toProductModel(productDTO);
+        ProductEntity productModel = productConverter.toProductModel(productDTO);
        if (productModel.getId() != null){
            if (this.productRepository.findById(productDTO.getId()).isEmpty()){
                log.info("Product not found ! Can not update !");

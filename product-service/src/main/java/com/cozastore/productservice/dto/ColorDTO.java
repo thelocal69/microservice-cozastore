@@ -1,6 +1,5 @@
 package com.cozastore.productservice.dto;
 
-import com.cozastore.productservice.model.AbstractAuditingModel;
 import lombok.*;
 
 @Builder
