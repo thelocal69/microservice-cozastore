@@ -1,14 +1,14 @@
 package com.cozastore.productservice.controller;
 
 import com.cozastore.productservice.dto.ColorDTO;
-import com.cozastore.productservice.payload.ResponseObject;
 import com.cozastore.productservice.service.IColorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @Slf4j
@@ -19,31 +19,26 @@ public class ColorController {
     private final IColorService colorService;
 
     @GetMapping()
+    @ResponseStatus(HttpStatus.OK)
     @Transactional(readOnly = true)
-    public ResponseEntity<ResponseObject> getAll(){
+    public CompletableFuture<?> getAll(int page, int limit){
         log.info("Get All Color is completed !");
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(
-                        new ResponseObject(
-                                200,
-                                "Get All Color is completed !",
-                                this.colorService.getAll()
-                        )
-                );
+        return colorService.getAll(page, limit);
     }
 
     @PostMapping()
+    @ResponseStatus(HttpStatus.CREATED)
     @Transactional(rollbackFor = Exception.class)
-    public ResponseEntity<ResponseObject> createColor(@RequestBody ColorDTO colorDTO){
-        this.colorService.createColor(colorDTO);
+    public CompletableFuture<Void> createColor(@RequestBody ColorDTO colorDTO){
         log.info("Created Color is completed !");
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(
-                        new ResponseObject(
-                                201,
-                                "Created Color is completed !",
-                                ""
-                        )
-                );
+        return colorService.createColor(colorDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @Transactional(rollbackFor = Exception.class)
+    public CompletableFuture<Void> deleteColor(@PathVariable("id") String id){
+        log.info("Delete Color is completed !");
+        return colorService.deleteColor(id);
     }
 }

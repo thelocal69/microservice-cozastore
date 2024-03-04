@@ -1,14 +1,14 @@
 package com.cozastore.productservice.controller;
 
 import com.cozastore.productservice.dto.ProductDTO;
-import com.cozastore.productservice.payload.ResponseObject;
 import com.cozastore.productservice.service.IProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.concurrent.CompletableFuture;
 
 
 @RestController
@@ -20,60 +20,38 @@ public class ProductController {
     private final IProductService productService;
 
     @GetMapping()
+    @ResponseStatus(HttpStatus.OK)
     @Transactional(readOnly = true)
-    public ResponseEntity<ResponseObject> getAllProduct(){
-        log.info("Get all is completed !");
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(
-                    200,
-                        "Get all is completed !",
-                        this.productService.getAllProduct()
-                )
-        );
+    public CompletableFuture<?> getAllProduct(
+            @RequestParam int page,
+            @RequestParam int limit
+    ){
+        log.info("get product is completed !");
+        return productService.getAllProduct(page, limit);
     }
 
     @PostMapping()
+    @ResponseStatus(HttpStatus.CREATED)
     @Transactional(rollbackFor = Exception.class)
-    public ResponseEntity<ResponseObject> createdProduct(@RequestBody ProductDTO productDTO){
-        this.productService.upsert(productDTO);
+    public CompletableFuture<?> createdProduct(@RequestBody ProductDTO productDTO){
         log.info("Created product is completed !");
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(
-                        new ResponseObject(
-                                201,
-                                "Created product is completed !",
-                                ""
-                        )
-                );
+        return productService.upsert(productDTO);
     }
 
-    @PutMapping()
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.CREATED)
     @Transactional(rollbackFor = Exception.class)
-    public ResponseEntity<ResponseObject> updateProduct(@RequestBody ProductDTO productDTO){
-        this.productService.upsert(productDTO);
-        log.info("Update product is completed !");
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(
-                        new ResponseObject(
-                                201,
-                                "Update product is completed !",
-                                ""
-                        )
-                );
+    public CompletableFuture<?> updateProduct(@PathVariable("id") String id, @RequestBody ProductDTO productDTO){
+        productDTO.setId(id);
+        log.info("Created product is completed !");
+        return productService.upsert(productDTO);
     }
 
-    @DeleteMapping()
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     @Transactional(rollbackFor = Exception.class)
-    public ResponseEntity<ResponseObject> deleteProduct(@RequestBody ProductDTO productDTO){
-        this.productService.delete(productDTO);
+    public CompletableFuture<?> deleteProduct(@PathVariable("id") String id){
         log.info("Delete product is completed !");
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(
-                        new ResponseObject(
-                                200,
-                                "Delete product is completed !",
-                                ""
-                        )
-                );
+        return productService.delete(id);
     }
 }

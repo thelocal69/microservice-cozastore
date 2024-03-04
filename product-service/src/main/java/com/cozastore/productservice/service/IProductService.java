@@ -1,12 +1,12 @@
 package com.cozastore.productservice.service;
 
 import com.cozastore.productservice.dto.ProductDTO;
+import com.cozastore.productservice.payload.ResponseOutput;
 
-import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface IProductService {
-    List<ProductDTO> getAllProduct();
-    ProductDTO getProductById(Long id);
-    void upsert(ProductDTO productDTO);
-    void delete(ProductDTO productDTO);
+    CompletableFuture<ResponseOutput> getAllProduct(int page, int limit);
+    CompletableFuture<Void> upsert(ProductDTO productDTO);
+    CompletableFuture<Void> delete(String id);
 }
