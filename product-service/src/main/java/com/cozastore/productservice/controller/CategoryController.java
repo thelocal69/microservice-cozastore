@@ -1,14 +1,14 @@
 package com.cozastore.productservice.controller;
 
 import com.cozastore.productservice.dto.CategoryDTO;
-import com.cozastore.productservice.payload.ObjectResponse;
 import com.cozastore.productservice.service.ICategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/category")
@@ -18,31 +18,36 @@ public class CategoryController {
     private final ICategoryService categoryService;
 
     @GetMapping()
+    @ResponseStatus(HttpStatus.OK)
     @Transactional(readOnly = true)
-    public ResponseEntity<ObjectResponse> getAll(){
+    public CompletableFuture<?> getAll(
+            @RequestParam int page,
+            @RequestParam int limit){
         log.info("get all category is completed !");
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(
-                        new ObjectResponse(
-                                200,
-                                "get all category is completed !",
-                                this.categoryService.getAll()
-                        )
-                );
+       return categoryService.getAll(page, limit);
+    }
+
+    @GetMapping("/{categoryId}")
+    @ResponseStatus(HttpStatus.OK)
+    @Transactional(readOnly = true)
+    public CompletableFuture<?> existCategoryId(@PathVariable String categoryId){
+        log.info("Category id is exist !");
+        return categoryService.getCategoryId(categoryId);
     }
 
     @PostMapping()
+    @ResponseStatus(HttpStatus.CREATED)
     @Transactional(rollbackFor = Exception.class)
-    public ResponseEntity<ObjectResponse> createCategory(@RequestBody CategoryDTO categoryDTO){
-        this.categoryService.createCategory(categoryDTO);
+    public CompletableFuture<?> createCategory(@RequestBody CategoryDTO categoryDTO){
         log.info("Create category is completed !");
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(
-                        new ObjectResponse(
-                                201,
-                                "Create category is completed !",
-                                ""
-                        )
-                );
+        return categoryService.createCategory(categoryDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @Transactional(rollbackFor = Exception.class)
+    public CompletableFuture<?> deleteCategory(@PathVariable("id") String id){
+        log.info("Delete category is completed !");
+        return categoryService.deleteCategory(id);
     }
 }
