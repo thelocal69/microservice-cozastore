@@ -28,20 +28,29 @@ public class UploadLocalImageService implements IUploadLocalImageService {
                 () -> {
                     String folderName = "product";
                     String fileName = uploadLocalImageUtil.storeFile(file, folderName);
-                    return domainURL+"/api/media/"+fileName;
+                    return domainURL+"/api/media/"+folderName+"/"+fileName;
+                }
+        );
+    }
+
+    @Override
+    public CompletableFuture<String> uploadImageCarousel(MultipartFile file) {
+        log.info("Upload carousel image is completed !");
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    String folderName = "carousel";
+                    String fileName = uploadLocalImageUtil.storeFile(file, folderName);
+                    return domainURL+"/api/media/"+folderName+"/"+fileName;
                 }
         );
     }
 
     @Async
     @Override
-    public CompletableFuture<byte[]> readImageUrl(String fileName) {
+    public CompletableFuture<byte[]> readImageUrl(String fileName, String folderName) {
         log.info("Read product image is completed !");
         return CompletableFuture.supplyAsync(
-                () -> {
-                    String folderName = "product";
-                    return uploadLocalImageUtil.readFileContent(fileName, folderName);
-                }
+                () -> uploadLocalImageUtil.readFileContent(fileName, folderName)
         ) ;
     }
 }

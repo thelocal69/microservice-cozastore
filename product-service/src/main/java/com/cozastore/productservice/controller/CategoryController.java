@@ -27,6 +27,14 @@ public class CategoryController {
        return categoryService.getAll(page, limit);
     }
 
+    @GetMapping("/{categoryId}")
+    @ResponseStatus(HttpStatus.OK)
+    @Transactional(readOnly = true)
+    public CompletableFuture<?> existCategoryId(@PathVariable String categoryId){
+        log.info("Category id is exist !");
+        return categoryService.getCategoryId(categoryId);
+    }
+
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional(rollbackFor = Exception.class)

@@ -6,5 +6,6 @@ import java.util.concurrent.CompletableFuture;
 
 public interface IUploadLocalImageService {
     CompletableFuture<String> uploadImageProduct(MultipartFile file);
-    CompletableFuture<byte[]> readImageUrl(String fileName);
+    CompletableFuture<String> uploadImageCarousel(MultipartFile file);
+    CompletableFuture<byte[]> readImageUrl(String fileName, String folderName);
 }

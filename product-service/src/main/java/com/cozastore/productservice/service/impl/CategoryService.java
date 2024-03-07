@@ -46,6 +46,21 @@ public class CategoryService implements ICategoryService {
 
     @Async
     @Override
+    @Transactional(readOnly = true)
+    public CompletableFuture<Boolean> getCategoryId(String id) {
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    if (!this.categoryRepository.existsById(id)){
+                        log.info("Category id is not exist !");
+                        throw new RuntimeException("Category id is not exist !");
+                    }
+                    return this.categoryRepository.existsById(id);
+                }
+        );
+    }
+
+    @Async
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public CompletableFuture<Void> createCategory(CategoryDTO categoryDTO) {
         return CompletableFuture.supplyAsync(

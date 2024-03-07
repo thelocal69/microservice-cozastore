@@ -25,10 +25,19 @@ public class UploadLocalImageController {
         return this.uploadLocalImageService.uploadImageProduct(file);
     }
 
-    @GetMapping(value = "/{fileName}", produces = MediaType.IMAGE_JPEG_VALUE)
+    @PostMapping(value = "/carousel")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CompletableFuture<String> uploadCarouselImage(@RequestParam("fileName")MultipartFile file){
+        log.info("Upload image carousel is completed !");
+        return this.uploadLocalImageService.uploadImageCarousel(file);
+    }
+
+    @GetMapping(value = "/{folderName}/{fileName}", produces = MediaType.IMAGE_JPEG_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public CompletableFuture<?> readImageUrl(@PathVariable String fileName){
+    public CompletableFuture<?> readImageUrl(
+            @PathVariable String fileName,
+            @PathVariable String folderName){
         log.info("Read image product is completed !");
-        return uploadLocalImageService.readImageUrl(fileName);
+        return uploadLocalImageService.readImageUrl(fileName, folderName);
     }
 }
