@@ -11,9 +11,9 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class AppConfig {
-    @Value("${host}")
+    @Value("${gate-way.host}")
     private String host;
-    @Value("${port}")
+    @Value("${gate-way.port}")
     private String port;
 
     @Bean

@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 public class UploadLocalImageService implements IUploadLocalImageService {
 
     private final IUploadLocalImageUtil uploadLocalImageUtil;
-    @Value("${domain_url}")
+    @Value("${path.domain_url}")
     private String domainURL;
 
     @Async

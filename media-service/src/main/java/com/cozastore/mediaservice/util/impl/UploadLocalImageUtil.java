@@ -21,7 +21,7 @@ import java.util.UUID;
 @Component
 public class UploadLocalImageUtil implements IUploadLocalImageUtil {
 
-    @Value("${root_path}")
+    @Value("${path.root_path}")
     private String rootPath;
 
     @Override

@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: search-service
+server:
+  port: ${SEARCH.PORT:8087}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:${EUREKA.PORT:8761}/eureka

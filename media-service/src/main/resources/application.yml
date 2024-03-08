@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: media-service
+server:
+  port: ${MEDIA.PORT:8089}
+
+path:
+  root_path: ${user.home}/Desktop/cozastore_media/
+  domain_url: http://localhost:${API_GATEWAY_PORT:9000}
+

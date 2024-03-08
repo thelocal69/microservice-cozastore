@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: user-service
+  data:
+    mongodb:
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/cozastore-security-service}
+server:
+  port: ${USER.PORT:8083}
+
+gate-way:
+  host: ${GATE_WAY_HOST:http://localhost}
+  port: ${GATE_WAY_PORT:9000}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:${EUREKA.PORT:8761}/eureka
+

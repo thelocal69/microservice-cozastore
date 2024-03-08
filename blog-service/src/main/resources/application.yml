@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: blog-service
+  data:
+    mongodb:
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/cozastore-blog-service}
+server:
+  port: ${BLOG.PORT:8084}
+
+gate-way:
+  host: ${GATE_WAY_HOST:http://localhost}
+  port: ${GATE_WAY_PORT:9000}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:${EUREKA.PORT:8761}/eureka

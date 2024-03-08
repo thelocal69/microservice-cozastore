@@ -1,0 +1,61 @@
+spring:
+  application:
+    name: security-service
+  data:
+    mongodb:
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/cozastore-security-service}
+
+server:
+  port: ${SECURITY.PORT:8085}
+
+gate-way:
+  host: ${GATE_WAY_HOST:http://localhost}
+  port: ${GATE_WAY_PORT:9000}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:${EUREKA.PORT:8761}/eureka
+
+jwt:
+  access-token-expiration: 18000000000
+  refresh-token-expiration: 864000000000
+  public-key: |
+    -----BEGIN PUBLIC KEY-----
+    MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuS4E8FXeWgO+xWGpYaCg
+    QzuPQCnd6Eb7++WQ6C60rh1y+eb/SPctg7uuAr4huOH0FbYPmoi0wDJuu3vP4E48
+    rxi672LGjG+1xCUI78SHVZj6Movfae9lkzN4duxA+UReIVcXD2FyovDUgj6VyMUE
+    NcEtKtbthzOTEoAXEFNEfifhF4QYbgv1yAbksYljSpUKjyBNOIU/xZjDt4wkktWl
+    VQJy6ioWQMuBdj2LQ7lxtED0O48p9hzvzhMoO/mC6hcjHdKngJ3XreWE3iqrZ/Bf
+    6rKx493VoAW/5ep2XpdZVqE0i/j427IARex+nd/uz1Q/KoeXWnuXOwzOcctHVP1L
+    HwIDAQAB
+    -----END PUBLIC KEY-----
+  private-key: |
+    -----BEGIN PRIVATE KEY-----
+    MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQC5LgTwVd5aA77F
+    YalhoKBDO49AKd3oRvv75ZDoLrSuHXL55v9I9y2Du64CviG44fQVtg+aiLTAMm67
+    e8/gTjyvGLrvYsaMb7XEJQjvxIdVmPoyi99p72WTM3h27ED5RF4hVxcPYXKi8NSC
+    PpXIxQQ1wS0q1u2HM5MSgBcQU0R+J+EXhBhuC/XIBuSxiWNKlQqPIE04hT/FmMO3
+    jCSS1aVVAnLqKhZAy4F2PYtDuXG0QPQ7jyn2HO/OEyg7+YLqFyMd0qeAndet5YTe
+    Kqtn8F/qsrHj3dWgBb/l6nZel1lWoTSL+PjbsgBF7H6d3+7PVD8qh5dae5c7DM5x
+    y0dU/UsfAgMBAAECggEBAIGMCDh6WgtvA07ie7SownVGfXjN0UhmIHKgrzc/NXd5
+    cq4RRBavlU/LRHj2unC04iUuMMxTRuAOaBkRDORG131HN7+wwmYM4IRPxGi4fFUN
+    qDskTy+1IsJQB75qmSnJAnEglClWavRCtuhHEFJcQg25DvghVBp5ojIXGgt5tTjr
+    S5Z2BhzOb4DHeamtUi+D6WzHiJZyJynsS1O+OU6a8ZcmeTu76BfhoCDMPDvOIGe9
+    Xf6rXq5jsqNASagQm4yoDXNiYPCd/jSej9PuResuLPOVQIiBdKwhR1t6N2aVvGdn
+    zsvxtkuh2sMEEoTveKJG3msJg8l26/sEi84VuL0FNIECgYEA6+igrluXVNqiUl0P
+    E037eX3CVWTSBQBMh3kPR/iITF2K8YC9Osvy6C54T0tLK1j9ByWXXPHqzeZRgVL+
+    a7xRA/9KoVHl3gvXtkwqG/fgIBi/ilV1iDanM/4XsMlsGErPfEYKpl41cJ5nYO4f
+    hHF2atENyPG3bBlU1dTymuFrGWcCgYEAyPNhOOuF768KR/5n16pI7uoNfRY9/GO4
+    fAgd0mQjoBGNqMw/8XUPUZKRNgd4nVbx4ZVQCZ90A5Snt2QfHldXSP/6fM667gyQ
+    Tk+LeLzTxCpiADcRWNDVv9/GKLMRmOHOeA/3sLZwa4jLQrY3sjrZOYPSnZGrFB29
+    eNf65Zzm1YkCgYBdjA3Llj5YQ6qChqxnt1C1SI07V5OAsDGotvS8UW2a+q0SPz7K
+    hf143JSQvQa91bfgkaOIE9ZMd7xyT/rbtf1aXG23ssY4WvHbNDCujoitsaKitGi6
+    7xE2qNe0HutiZqgIW631cv41/lp4MXUGDAgtK2EQAen+T704Xg0mJaVWmQKBgQC+
+    lXVD0rx4kf6iQTqjZDE/xmN8mze2w60YlWoTPD49dehwiyaqDme06dkm8PcH4ooN
+    dNswBTa2nqpiWGbbE+MIrR4YeMj5NJk4bGDO5efCSKAhrBibr5TKIaWCvDKYWLDF
+    Vf+Ibb85fcepQcCZHQ8gaVG7d4hVz87/aXffhWu4YQKBgQC3Yaq3rdNkFH/JUNVW
+    Or6WmeLfDWBGp0PByo+zFifqLXl8gG/E5p1g3dLfh7g36jO+SBH++8p9lb4mJ8r5
+    LqniFBIfLpJ04WYYdYY58Xx8mjM+uziCWDP4KRWBVTC4fEC6i5W+x3AfRNbC1336
+    q4xdEI7ELJGrkxUcxfiH1DzNww==
+    -----END PRIVATE KEY-----
