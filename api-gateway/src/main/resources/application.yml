@@ -20,6 +20,8 @@ spring:
           uri: http://localhost:${PRODUCT.PORT:8080}
           predicates:
             - Path=/api/product/**
+          filters:
+            - AuthenticationFilter
 
         - id: category_service
           uri: http://localhost:${PRODUCT.PORT:8080}
@@ -88,3 +90,15 @@ logging:
           gateway:
             route:
               RouteDefinitionLocator: info
+
+jwt:
+  public-key: |
+    -----BEGIN PUBLIC KEY-----
+    MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuS4E8FXeWgO+xWGpYaCg
+    QzuPQCnd6Eb7++WQ6C60rh1y+eb/SPctg7uuAr4huOH0FbYPmoi0wDJuu3vP4E48
+    rxi672LGjG+1xCUI78SHVZj6Movfae9lkzN4duxA+UReIVcXD2FyovDUgj6VyMUE
+    NcEtKtbthzOTEoAXEFNEfifhF4QYbgv1yAbksYljSpUKjyBNOIU/xZjDt4wkktWl
+    VQJy6ioWQMuBdj2LQ7lxtED0O48p9hzvzhMoO/mC6hcjHdKngJ3XreWE3iqrZ/Bf
+    6rKx493VoAW/5ep2XpdZVqE0i/j427IARex+nd/uz1Q/KoeXWnuXOwzOcctHVP1L
+    HwIDAQAB
+    -----END PUBLIC KEY-----

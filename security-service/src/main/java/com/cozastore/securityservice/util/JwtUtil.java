@@ -5,7 +5,6 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.KeyFactory;
@@ -69,18 +68,17 @@ public class JwtUtil {
         return expirationDate.before(new Date());
     }
 
-    public boolean validateToken(String token, UserDetails userDetails)
+    public boolean validateToken(String token)
             throws NoSuchAlgorithmException, InvalidKeySpecException {
         return (!isTokenExpired(token));
     }
 
-    public String createAccessToken(UserDetails user) {
+    public String createAccessToken(String data) {
         try {
             RSAPrivateKey privateKey = getPrivateKey();
             return Jwts.builder()
-                    .setSubject(user.getUsername())
+                    .setSubject(data)
                     .claim("type", "access-token")
-                    .claim("role", user.getAuthorities())
                     .setIssuedAt(new Date(System.currentTimeMillis()))
                     .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
                     .signWith(privateKey, SignatureAlgorithm.RS512)
@@ -90,11 +88,11 @@ public class JwtUtil {
         }
     }
 
-    public String createRefreshToken(String subject) {
+    public String createRefreshToken(String data) {
         try {
             RSAPrivateKey privateKey = getPrivateKey();
             return Jwts.builder()
-                    .setSubject(subject)
+                    .setSubject(data)
                     .claim("type", "refresh-token")
                     .setIssuedAt(new Date(System.currentTimeMillis()))
                     .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
@@ -105,4 +103,10 @@ public class JwtUtil {
         }
     }
 
+    public String parserToken(String token) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        return Jwts.parserBuilder()
+                .setSigningKey(getPublicKey()).build()
+                .parseClaimsJws(token).getBody()
+                .getSubject();
+    }
 }

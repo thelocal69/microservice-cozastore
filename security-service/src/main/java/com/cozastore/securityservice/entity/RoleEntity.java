@@ -1,23 +1,25 @@
 package com.cozastore.securityservice.entity;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
+
+import java.util.Set;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "roles")
+@Entity(name = "roles")
 public class RoleEntity {
     @Id
-    @Indexed(unique = true)
-    private String id;
-    @Field(name = "role_name")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(name = "role_name")
     private String roleName;
+
+    @OneToMany(mappedBy = "role")
+    private Set<UserEntity> userEntitySet;
 }
