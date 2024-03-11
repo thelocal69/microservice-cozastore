@@ -1,4 +1,4 @@
-package com.cozastore.productservice.payload;
+package com.cozastore.productservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +9,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResponseObject {
-    private Integer statusCode;
-    private String message;
-    private Object data;
+public class TokenDTO {
+    private String accessToken;
 }

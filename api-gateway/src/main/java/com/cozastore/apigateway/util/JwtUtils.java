@@ -17,19 +17,25 @@ public class JwtUtils {
     @Value("${jwt.public-key}")
     private String publicKey;
 
-    public String parserToken(String token) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        return Jwts.parserBuilder()
-                .setSigningKey(getPublicKey()).build()
+    public void parserToken(String token) {
+        Jwts.parserBuilder()
+                .setSigningKey(getPublicKeys()).build()
                 .parseClaimsJws(token).getBody()
                 .getSubject();
     }
 
-    private RSAPublicKey getPublicKey() throws NoSuchAlgorithmException, InvalidKeySpecException {
-        byte[] publicKeyBytes = Base64.getDecoder().decode(
-                publicKey.replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", "")
-                        .replaceAll("\\s+", ""));
-        X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        return (RSAPublicKey) keyFactory.generatePublic(publicKeySpec);
+    private RSAPublicKey getPublicKeys() {
+        X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(
+                Base64.getDecoder().decode(publicKey.replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", "")
+                        .replaceAll("\\s+", ""))
+        );
+        RSAPublicKey rsaPublicKey;
+        try {
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            rsaPublicKey = (RSAPublicKey) keyFactory.generatePublic(publicKeySpec);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        return rsaPublicKey;
     }
 }

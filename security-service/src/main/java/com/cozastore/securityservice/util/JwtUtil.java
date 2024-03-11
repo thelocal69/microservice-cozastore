@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +19,7 @@ import java.util.Base64;
 import java.util.Date;
 
 @Component
+@Slf4j
 public class JwtUtil {
     @Value("${jwt.access-token-expiration}")
     private long accessTokenExpiration;
@@ -28,28 +30,41 @@ public class JwtUtil {
     @Value("${jwt.private-key}")
     private String privateKey;
 
-    private RSAPrivateKey getPrivateKey() throws NoSuchAlgorithmException, InvalidKeySpecException {
-        byte[] privateKeyBytes = Base64.getDecoder().decode(
-                privateKey.replace("-----BEGIN PRIVATE KEY-----", "")
+    private RSAPrivateKey getPrivateKeys() {
+        PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(
+                Base64.getDecoder().decode(privateKey.replace("-----BEGIN PRIVATE KEY-----", "")
                         .replace("-----END PRIVATE KEY-----", "")
-                        .replaceAll("\\s+", ""));
-        PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        return (RSAPrivateKey) keyFactory.generatePrivate(privateKeySpec);
+                        .replaceAll("\\s+", ""))
+        );
+        RSAPrivateKey rsaPrivateKey = null;
+        try {
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            rsaPrivateKey = (RSAPrivateKey) keyFactory.generatePrivate(privateKeySpec);
+
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            log.info(e.getMessage());
+        }
+        return rsaPrivateKey;
     }
 
-    private RSAPublicKey getPublicKey() throws NoSuchAlgorithmException, InvalidKeySpecException {
-        byte[] publicKeyBytes = Base64.getDecoder().decode(
-                publicKey.replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", "")
-                        .replaceAll("\\s+", ""));
-        X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        return (RSAPublicKey) keyFactory.generatePublic(publicKeySpec);
+    private RSAPublicKey getPublicKeys() {
+        X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(
+                Base64.getDecoder().decode(publicKey.replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", "")
+                        .replaceAll("\\s+", ""))
+        );
+        RSAPublicKey rsaPublicKey = null;
+        try {
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            rsaPublicKey = (RSAPublicKey) keyFactory.generatePublic(publicKeySpec);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            log.info(e.getMessage());
+        }
+        return rsaPublicKey;
     }
 
     public Date getExpirationDateFromToken(String token)
             throws NoSuchAlgorithmException, InvalidKeySpecException {
-        RSAPublicKey publicKey = getPublicKey();
+        RSAPublicKey publicKey = getPublicKeys();
         Jws<Claims> jws = Jwts.parserBuilder()
                 .setSigningKey(publicKey)
                 .build()
@@ -68,45 +83,37 @@ public class JwtUtil {
         return expirationDate.before(new Date());
     }
 
-    public boolean validateToken(String token)
-            throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public boolean validateToken(String token) {
         return (!isTokenExpired(token));
     }
 
     public String createAccessToken(String data) {
-        try {
-            RSAPrivateKey privateKey = getPrivateKey();
-            return Jwts.builder()
-                    .setSubject(data)
-                    .claim("type", "access-token")
-                    .setIssuedAt(new Date(System.currentTimeMillis()))
-                    .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
-                    .signWith(privateKey, SignatureAlgorithm.RS512)
-                    .compact();
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            throw new RuntimeException("Error generating token", e);
-        }
+        RSAPrivateKey privateKey = getPrivateKeys();
+        return Jwts.builder()
+                .setSubject(data)
+                .claim("type", "access-token")
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
+                .signWith(privateKey, SignatureAlgorithm.RS512)
+                .compact();
     }
 
     public String createRefreshToken(String data) {
-        try {
-            RSAPrivateKey privateKey = getPrivateKey();
-            return Jwts.builder()
-                    .setSubject(data)
-                    .claim("type", "refresh-token")
-                    .setIssuedAt(new Date(System.currentTimeMillis()))
-                    .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
-                    .signWith(privateKey, SignatureAlgorithm.RS512)
-                    .compact();
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            throw new RuntimeException("Error generating token", e);
-        }
+        RSAPrivateKey privateKey = getPrivateKeys();
+        return Jwts.builder()
+                .setSubject(data)
+                .claim("type", "refresh-token")
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
+                .signWith(privateKey, SignatureAlgorithm.RS512)
+                .compact();
     }
 
-    public String parserToken(String token) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        return Jwts.parserBuilder()
-                .setSigningKey(getPublicKey()).build()
-                .parseClaimsJws(token).getBody()
-                .getSubject();
+    public Claims parserToken(String token) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        RSAPublicKey rsaPublicKey = getPublicKeys();
+        Jws<Claims> claimsJws = Jwts.parserBuilder()
+                .setSigningKey(rsaPublicKey).build()
+                .parseClaimsJws(token);
+        return claimsJws.getBody();
     }
 }

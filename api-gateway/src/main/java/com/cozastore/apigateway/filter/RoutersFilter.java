@@ -10,6 +10,11 @@ import java.util.function.Predicate;
 public class RoutersFilter {
     public static final List<String> openAPIEndpoints = List.of(
             "/api/account/register",
+            "/api/account/login",
+            "/api/account/login_admin",
+            "/api/account/logout",
+            "/api/account/validate",
+            "/api/product",
             "/eureka"
     );
 

@@ -5,16 +5,31 @@ spring:
     web-application-type: reactive
   cloud:
     gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      globals:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
       routes:
         - id: discovery_server
           uri: http://localhost:${EUREKA.PORT:8761}/eureka
           predicates:
             - Path=/eureka/web
 
+        - id: discovery_server_static
+          uri: http://localhost:${EUREKA.PORT:8761}/eureka
+          predicates:
+            - Path=/eureka/**
+
         - id: security_service
           uri: http://localhost:${SECURITY.PORT:8085}
           predicates:
             - Path=/api/account/**
+          filters:
+            - AuthenticationFilter
 
         - id: product_service
           uri: http://localhost:${PRODUCT.PORT:8080}

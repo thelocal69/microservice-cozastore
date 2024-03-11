@@ -41,21 +41,21 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         );
         if (user != null){
             if (user.isEnabled()){
-                if (passwordEncoder.matches(password, user.getPassword())){
-                    List<GrantedAuthority> roles = new ArrayList<>();
-                    GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(
-                           user.getRole().getRoleName()
-                    );
-                    roles.add(grantedAuthority);
-                    UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                            email, user.getPassword(), roles
-                    );
-                    SecurityContextHolder.getContext().setAuthentication(token);
-                    return token;
-                }else {
-                    log.info("Username or password not exist !");
-                    throw new RuntimeException("Username or password not exist !");
+                String userPass = user.getPassword();
+                if (!passwordEncoder.matches(password, userPass)){
+                        log.info("Username or password not exist !");
+                        throw new RuntimeException("Username or password not exist !");
                 }
+                List<GrantedAuthority> roles = new ArrayList<>();
+                GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(
+                        user.getRole().getRoleName()
+                );
+                roles.add(grantedAuthority);
+                UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                        email, user.getPassword(), roles
+                );
+                SecurityContextHolder.getContext().setAuthentication(token);
+                return token;
             }else{
                 log.info("User is disabled !");
                 throw new RuntimeException("User is disabled !");
