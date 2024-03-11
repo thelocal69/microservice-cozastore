@@ -14,6 +14,11 @@ public class RoutersFilter {
             "/api/account/login_admin",
             "/api/account/logout",
             "/api/account/validate",
+            "/api/account/verify_email",
+            "/api/account/forgot_password",
+            "/api/account/set_password",
+            "/api/account/resend_active",
+            "/api/account/gen_access",
             "/api/product",
             "/eureka"
     );

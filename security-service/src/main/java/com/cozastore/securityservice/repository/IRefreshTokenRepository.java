@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface IRefreshTokenRepository extends JpaRepository<TokenEntity, Long> {
@@ -14,5 +15,5 @@ public interface IRefreshTokenRepository extends JpaRepository<TokenEntity, Long
             "  WHERE u.id = :userId AND (r.expired = false or r.revoke = false )")
     List<TokenEntity> findAllByTokenValidByUser(Long userId);
 
-    TokenEntity findByToken(String token);
+    Optional<TokenEntity>findByToken(String token);
 }

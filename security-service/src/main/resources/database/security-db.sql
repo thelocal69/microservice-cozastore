@@ -38,6 +38,14 @@ CREATE TABLE refresh_token(
                               primary key (id)
 );
 
+CREATE TABLE verification_token(
+                                   id bigint  auto_increment,
+                                   users_id bigint not null,
+                                   token varchar(255),
+                                   expired_time timestamp,
+                                   primary key (id)
+);
+
 ALTER TABLE users ADD CONSTRAINT FK_role_user FOREIGN KEY (role_id) REFERENCES roles(id);
 ALTER TABLE refresh_token ADD CONSTRAINT  FK_user_token FOREIGN KEY (user_id) REFERENCES users(id);
 

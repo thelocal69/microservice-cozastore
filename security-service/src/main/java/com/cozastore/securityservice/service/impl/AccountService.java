@@ -1,17 +1,17 @@
 package com.cozastore.securityservice.service.impl;
 
 import com.cozastore.securityservice.converter.AccountConverter;
-import com.cozastore.securityservice.dto.LoginDTO;
-import com.cozastore.securityservice.dto.RegisterDTO;
-import com.cozastore.securityservice.dto.TokenDTO;
+import com.cozastore.securityservice.dto.*;
 import com.cozastore.securityservice.entity.RoleEntity;
 import com.cozastore.securityservice.entity.TokenEntity;
 import com.cozastore.securityservice.entity.UserEntity;
+import com.cozastore.securityservice.entity.VerificationTokenEntity;
 import com.cozastore.securityservice.payload.ResponseAuthentication;
 import com.cozastore.securityservice.payload.ResponseToken;
 import com.cozastore.securityservice.repository.IRefreshTokenRepository;
 import com.cozastore.securityservice.repository.IRoleRepository;
 import com.cozastore.securityservice.repository.IUserRepository;
+import com.cozastore.securityservice.repository.IVerifyTokenRepository;
 import com.cozastore.securityservice.service.IAccountService;
 import com.cozastore.securityservice.util.JwtUtil;
 import com.google.gson.Gson;
@@ -24,12 +24,16 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Calendar;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -40,10 +44,12 @@ public class AccountService implements IAccountService {
     private final IUserRepository userRepository;
     private final IRoleRepository roleRepository;
     private final IRefreshTokenRepository refreshTokenRepository;
+    private final IVerifyTokenRepository verifyTokenRepository;
     private final AccountConverter accountConverter;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final Gson gson;
+    private final PasswordEncoder passwordEncoder;
 
     @Async
     @Override
@@ -54,6 +60,10 @@ public class AccountService implements IAccountService {
                 log.info("Account is exist cannot register !");
                 throw new RuntimeException("Account is exist cannot register !");
             }
+            if (userRepository.existsByEmailAndStatus(registerDTO.getEmail(), 0)){
+                log.info("Account is block !");
+                throw new RuntimeException("Account is block !");
+            }
             if (!roleRepository.existsByRoleName("ROLE_USER")){
                 throw new RuntimeException("Cannot authorization !");
             }
@@ -61,6 +71,11 @@ public class AccountService implements IAccountService {
             UserEntity user = accountConverter.toUserEntity(registerDTO);
             user.setRole(role);
             this.userRepository.save(user);
+            String verifyCode = String.format("%040d", new BigInteger(
+                    UUID.randomUUID().toString().replace("-", ""), 16)
+            );
+            VerificationTokenEntity verificationToken = new VerificationTokenEntity(verifyCode.substring(0, 6), user);
+            this.verifyTokenRepository.save(verificationToken);
             return null;
         });
     }
@@ -156,6 +171,200 @@ public class AccountService implements IAccountService {
                     throw new RuntimeException(e);
                 }
         });
+    }
+
+    public String validateCode(String verifyToken) {
+        VerificationTokenEntity verificationToken = verifyTokenRepository.findByToken(verifyToken);
+        if(verificationToken == null){
+            log.info("Invalid verification token !");
+            return "Invalid verification token !";
+        }
+        if (verificationToken.getUser().isEnable()){
+            log.info("This account has already been verified, please login!");
+            return "This account has already been verified, please, login.";
+        }
+        UserEntity userEntity = verificationToken.getUser();
+        Calendar calendar = Calendar.getInstance();
+        if ((verificationToken.getExpired().getTime() - calendar.getTime().getTime()) <= 0){
+            verifyTokenRepository.delete(verificationToken);
+            log.info("Token already expired !");
+            return "Token already expired !";
+        }
+        userEntity.setEnable(true);
+        userRepository.save(userEntity);
+        log.info("Token valid");
+        return "Valid";
+    }
+
+    @Async
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CompletableFuture<String> verifyAccount(VerifyAccountDTO verifyAccountDTO) {
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    VerificationTokenEntity verificationToken = verifyTokenRepository.findByToken(verifyAccountDTO.getVerifyCode());
+                    if (verificationToken.getUser().isEnable()){
+                        log.info("This account has already been verified, please login!");
+                        return "This account has already been verified, please, login.";
+                    }
+                    String verificationResult = validateCode(verificationToken.getToken());
+                    if (verificationResult.equalsIgnoreCase("Valid")){
+                        log.info("Email verified successfully. Now you can login to your account");
+                        return "Email verified successfully. Now you can login to your account";
+                    }
+                    log.info("Invalid verification token !");
+                    return "Invalid verification token !";
+                }
+        );
+    }
+
+    public String validateTokenReset(String verifyToken) {
+        VerificationTokenEntity tokenReset = verifyTokenRepository.findByToken(verifyToken);
+        if(tokenReset == null){
+            log.info("Invalid verification token !");
+            return "Invalid verification token !";
+        }
+        Calendar calendar = Calendar.getInstance();
+        if ((tokenReset.getExpired().getTime() - calendar.getTime().getTime()) <= 0){
+            this.verifyTokenRepository.delete(tokenReset);
+            log.info("Token already expired !");
+            return "Token already expired !";
+        }
+        log.info("Token valid");
+        return "Valid";
+    }
+
+    @Async
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CompletableFuture<String> forgotPassword(String email) {
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    UserEntity user = userRepository.findByEmailAndStatus(email, 1);
+                    if (user == null){
+                        log.info("User not exist !");
+                        return "User not exist !";
+                    }
+                    if (user.getStatus() == 0){
+                        log.info("User is blocked !");
+                        return "User is blocked !";
+                    }
+                    String verifyCode = String.format("%040d", new BigInteger(
+                            UUID.randomUUID().toString().replace("-", ""), 16)
+                    );
+                    VerificationTokenEntity verificationToken = new VerificationTokenEntity(verifyCode.substring(0, 6), user);
+                    this.verifyTokenRepository.save(verificationToken);
+                    log.info("Check your email to reset password if account was registered !");
+                    return "Check your email to reset password if account was register !";
+                }
+        );
+    }
+
+    @Async
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CompletableFuture<String> setPassword(ResetPasswordDTO resetPasswordDTO) {
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    UserEntity user = userRepository.findByEmailAndStatus(resetPasswordDTO.getEmail(), 1);
+                    if (user == null){
+                        log.info("User not exist !");
+                        return "User not exist !";
+                    }
+                    if (user.getStatus() == 0){
+                        log.info("User is blocked !");
+                        return "User is blocked !";
+                    }
+                    String verificationResult = validateTokenReset(resetPasswordDTO.getToken());
+                    if (verificationResult.equalsIgnoreCase("valid")) {
+                        user.setPassword(this.passwordEncoder.encode(resetPasswordDTO.getPassword()));
+                        this.userRepository.save(user);
+                    }else {
+                        return "Verify code is not correct !";
+                    }
+                    log.info("Set new password successfully !");
+                    return "Set new password successfully !";
+                }
+        );
+    }
+
+    @Async
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CompletableFuture<String> resendActiveAccount(String email) {
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    UserEntity user = userRepository.findByEmailAndStatus(email, 1);
+                    if (user == null){
+                        log.info("User not exist !");
+                        return "User not exist !";
+                    }
+                    if (user.getStatus() == 0){
+                        log.info("User is blocked !");
+                        return "User is blocked !";
+                    }
+                    String verifyCode = String.format("%040d", new BigInteger(
+                            UUID.randomUUID().toString().replace("-", ""), 16)
+                    );
+                    VerificationTokenEntity verificationToken = new VerificationTokenEntity(verifyCode.substring(0, 6), user);
+                    this.verifyTokenRepository.save(verificationToken);
+                    return "Verification code is resend to your email ! please check email to activation account again !";
+                }
+        );
+    }
+
+    @Async
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CompletableFuture<ResponseAuthentication> genAccessToken(AccessRefreshTokenDTO accessRefreshTokenDTO) {
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    if (jwtUtil.isTokenExpired(accessRefreshTokenDTO.getAccessToken())){
+                        try {
+                            Claims data = jwtUtil.parserToken(accessRefreshTokenDTO.getRefreshToken());
+                            if (data == null){
+                                throw new RuntimeException("AccessToken is null !");
+                            }
+                            if (jwtUtil.isTokenExpired(accessRefreshTokenDTO.getRefreshToken())){
+                                boolean isVTokensExpired = refreshTokenRepository.findByToken(accessRefreshTokenDTO.getRefreshToken())
+                                        .map(tokens ->
+                                                tokens.isExpired() && tokens.isRevoke()
+                                        ).orElse(true);
+                                throw new RuntimeException("Refresh Token is expired !" + isVTokensExpired);
+                            }
+                            boolean isValidTokens = refreshTokenRepository.findByToken(accessRefreshTokenDTO.getRefreshToken())
+                                    .map(tokens ->
+                                            !tokens.isExpired() && !tokens.isRevoke()
+                                    ).orElse(false);
+
+                            if(!isValidTokens){
+                                log.info("Refresh token is expired or not exist !");
+                                throw new RuntimeException("Refresh token is expired or not exist !");
+                            }
+                            String email = data.getSubject();
+                            UserEntity user = userRepository.findByEmail(email);
+                            if (user == null || user.getStatus() == 0){
+                                log.info("User is not exist or blocked !");
+                                throw new RuntimeException("User is not exist or blocked !");
+                            }
+                            ResponseToken responseToken = new ResponseToken();
+                            responseToken.setEmail(email);
+                            responseToken.setRoleName(user.getRole().getRoleName());
+                            String accessToken = jwtUtil.createAccessToken(gson.toJson(responseToken));
+                            return ResponseAuthentication
+                                    .builder()
+                                    .accessToken(accessToken)
+                                    .refreshToken(accessRefreshTokenDTO.getRefreshToken())
+                                    .build();
+                        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }else {
+                        log.info("Access Token is not expired !");
+                        throw new RuntimeException("Access Token is not expired !");
+                    }
+                }
+        );
     }
 
 }

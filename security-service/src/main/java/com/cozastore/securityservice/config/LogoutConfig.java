@@ -20,7 +20,7 @@ public class LogoutConfig implements LogoutHandler {
         final String headerValue = request.getHeader("Authorization");
         if (headerValue != null && headerValue.startsWith("Bearer ")) {
             final String token = headerValue.substring(7);
-            TokenEntity storedTokens = refreshTokenRepository.findByToken(token);
+            TokenEntity storedTokens = refreshTokenRepository.findByToken(token).orElse(null);
             if (storedTokens != null){
                 storedTokens.setExpired(true);
                 storedTokens.setRevoke(true);

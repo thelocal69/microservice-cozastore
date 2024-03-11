@@ -1,8 +1,6 @@
 package com.cozastore.securityservice.controller;
 
-import com.cozastore.securityservice.dto.LoginDTO;
-import com.cozastore.securityservice.dto.RegisterDTO;
-import com.cozastore.securityservice.dto.TokenDTO;
+import com.cozastore.securityservice.dto.*;
 import com.cozastore.securityservice.service.IAccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,5 +47,45 @@ public class AccountController {
     public CompletableFuture<?> validate(@RequestBody TokenDTO tokenDTO){
         log.info("Validate token is completed !");
         return this.accountService.validateToken(tokenDTO);
+    }
+
+    @PostMapping("/verify_email")
+    @ResponseStatus(HttpStatus.OK)
+    @Transactional(rollbackFor = Exception.class)
+    public CompletableFuture<?> verifyEmail(@RequestBody VerifyAccountDTO verifyAccountDTO){
+        log.info("Verify email is completed !");
+        return this.accountService.verifyAccount(verifyAccountDTO);
+    }
+
+    @PostMapping("/forgot_password")
+    @ResponseStatus(HttpStatus.OK)
+    @Transactional(rollbackFor = Exception.class)
+    public CompletableFuture<?> forgotPassword(@RequestParam String email){
+        log.info("Send forgot password is completed !");
+        return this.accountService.forgotPassword(email);
+    }
+
+    @PostMapping("/set_password")
+    @ResponseStatus(HttpStatus.OK)
+    @Transactional(rollbackFor = Exception.class)
+    public CompletableFuture<?> setPassword(@RequestBody ResetPasswordDTO resetPasswordDTO){
+        log.info("Reset password is completed !");
+        return this.accountService.setPassword(resetPasswordDTO);
+    }
+
+    @PostMapping("/resend_active")
+    @ResponseStatus(HttpStatus.OK)
+    @Transactional(rollbackFor = Exception.class)
+    public CompletableFuture<?> resendActive(@RequestParam String email){
+        log.info("Resend active is completed !");
+        return this.accountService.resendActiveAccount(email);
+    }
+
+    @PostMapping("/gen_access")
+    @ResponseStatus(HttpStatus.OK)
+    @Transactional(rollbackFor = Exception.class)
+    public CompletableFuture<?> genAccessToken(@RequestBody AccessRefreshTokenDTO accessRefreshTokenDTO){
+        log.info("Gen access token is completed !");
+        return this.accountService.genAccessToken(accessRefreshTokenDTO);
     }
 }

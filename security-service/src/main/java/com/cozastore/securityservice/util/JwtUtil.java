@@ -83,9 +83,6 @@ public class JwtUtil {
         return expirationDate.before(new Date());
     }
 
-    public boolean validateToken(String token) {
-        return (!isTokenExpired(token));
-    }
 
     public String createAccessToken(String data) {
         RSAPrivateKey privateKey = getPrivateKeys();
