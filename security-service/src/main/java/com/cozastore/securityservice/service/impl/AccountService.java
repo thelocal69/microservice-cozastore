@@ -129,6 +129,10 @@ public class AccountService implements IAccountService {
     public CompletableFuture<ResponseAuthentication> loginAccountUser(LoginDTO loginDTO) {
         return CompletableFuture.supplyAsync(
                 () -> {
+                    if (userRepository.existsByEmailAndStatus(loginDTO.getEmail(), 0)){
+                        log.info("User is banned !");
+                        throw new RuntimeException("User is banned !");
+                    }
                     UserEntity user = userRepository.findByEmailAndStatus(loginDTO.getEmail(), 1);
                     if (!user.getRole().getRoleName().equals("ROLE_USER")){
                         log.info("Permission denied !");

@@ -1,12 +1,10 @@
-package com.cozastore.securityservice.config;
+package com.cozastore.userservice.config;
 
 import lombok.NonNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Optional;
 
@@ -24,16 +22,17 @@ public class JpaAuditingConfig {
         //use nested class
         @Override
         public @NonNull Optional<String> getCurrentAuditor() {
-            //tracking user
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication == null){
-                return Optional.of("Anonymous");
-            }
-            if (!authentication.isAuthenticated()){
-                return Optional.empty();
-            }
-            String username = authentication.getName();
-            return Optional.of(username);
+//            //tracking user
+//            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//            if (authentication == null){
+//                return Optional.of("Anonymous");
+//            }
+//            if (!authentication.isAuthenticated()){
+//                return Optional.empty();
+//            }
+//            String username = authentication.getName();
+//            return Optional.of(username);
+            return Optional.empty();
         }
     }
 }

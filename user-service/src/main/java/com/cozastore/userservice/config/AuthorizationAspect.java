@@ -1,9 +1,9 @@
-package com.cozastore.productservice.config;
+package com.cozastore.userservice.config;
 
-import com.cozastore.productservice.annotation.RequiredAuthorization;
-import com.cozastore.productservice.dto.TokenDTO;
-import com.cozastore.productservice.feign.AuthClient;
-import com.cozastore.productservice.payload.ResponseToken;
+import com.cozastore.userservice.annotation.RequiredAuthorization;
+import com.cozastore.userservice.dto.TokenDTO;
+import com.cozastore.userservice.feign.AuthClient;
+import com.cozastore.userservice.payload.ResponseToken;
 import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

@@ -1,5 +1,6 @@
 package com.cozastore.productservice.controller;
 
+import com.cozastore.productservice.annotation.RequiredAuthorization;
 import com.cozastore.productservice.dto.ColorDTO;
 import com.cozastore.productservice.service.IColorService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class ColorController {
         return colorService.getAll(page, limit);
     }
 
+    @RequiredAuthorization("ROLE_ADMIN")
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional(rollbackFor = Exception.class)
@@ -34,6 +36,7 @@ public class ColorController {
         return colorService.createColor(colorDTO);
     }
 
+    @RequiredAuthorization("ROLE_ADMIN")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Transactional(rollbackFor = Exception.class)

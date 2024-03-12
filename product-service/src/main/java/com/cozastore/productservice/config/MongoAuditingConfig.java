@@ -1,11 +1,8 @@
 package com.cozastore.productservice.config;
 
-import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
@@ -15,18 +12,11 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Configuration
 @EnableMongoRepositories(basePackages = "com.cozastore.productservice.repository")
-@EnableMongoAuditing(auditorAwareRef = "auditorProvider")
+@EnableMongoAuditing()
 public class MongoAuditingConfig extends AbstractMongoClientConfiguration {
-
-    @Bean
-    public AuditorAware<String> auditorProvider(){
-        //tracking date time
-        return new AuditorAwareImpl();
-    }
 
     @NotNull
     @Override
@@ -43,7 +33,7 @@ public class MongoAuditingConfig extends AbstractMongoClientConfiguration {
         return new MongoCustomConversions(converters);
     }
 
-    public static class TimeStampReadConverter implements Converter<Date, Timestamp>{
+    public static class TimeStampReadConverter implements Converter<Date, Timestamp> {
 
         @Override
         public Timestamp convert(@NotNull Date date) {
@@ -51,7 +41,7 @@ public class MongoAuditingConfig extends AbstractMongoClientConfiguration {
         }
     }
 
-    public static class TimeStampWriteConverter implements Converter<Timestamp, Date>{
+    public static class TimeStampWriteConverter implements Converter<Timestamp, Date> {
 
         @Override
         public Date convert(@NotNull Timestamp timestamp) {
@@ -59,24 +49,4 @@ public class MongoAuditingConfig extends AbstractMongoClientConfiguration {
         }
     }
 
-    public static class AuditorAwareImpl implements AuditorAware<String> {
-
-        //use nested class
-        @Override
-        public @NonNull Optional<String> getCurrentAuditor() {
-            //tracking user
-            ///Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//            String username = authentication.getName();
-//            String nickName = username;
-//            if (username.contains("@")){
-//                int index = username.indexOf("@");
-//                nickName = username.substring(0 ,index);
-//            }
-//            if (!authentication.isAuthenticated()){
-//                return Optional.empty();
-//            }
-//            return Optional.of(nickName);
-            return Optional.empty();
-        }
-    }
 }

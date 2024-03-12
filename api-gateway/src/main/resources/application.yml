@@ -42,16 +42,22 @@ spring:
           uri: http://localhost:${PRODUCT.PORT:8080}
           predicates:
             - Path=/api/category/**
+          filters:
+            - AuthenticationFilter
 
         - id: color_service
           uri: http://localhost:${PRODUCT.PORT:8080}
           predicates:
             - Path=/api/color/**
+          filters:
+            - AuthenticationFilter
 
         - id: size_service
           uri: http://localhost:${PRODUCT.PORT:8080}
           predicates:
             - Path=/api/size/**
+          filters:
+            - AuthenticationFilter
 
         - id: blog_service
           uri: http://localhost:${BLOG.PORT:8084}
@@ -87,6 +93,8 @@ spring:
           uri: http://localhost:${USER.PORT:8083}
           predicates:
             - Path=/api/user/**
+          filters:
+            - AuthenticationFilter
 
 server:
   port: ${API_GATEWAY_PORT:9000}

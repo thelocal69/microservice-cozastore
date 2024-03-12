@@ -1,9 +1,8 @@
-package com.cozastore.productservice.config;
+package com.cozastore.userservice.config;
 
-import com.cozastore.productservice.annotation.RequiredAuthorization;
-import com.cozastore.productservice.dto.TokenDTO;
-import com.cozastore.productservice.feign.AuthClient;
-import com.cozastore.productservice.payload.ResponseToken;
+import com.cozastore.userservice.dto.TokenDTO;
+import com.cozastore.userservice.feign.AuthClient;
+import com.cozastore.userservice.payload.ResponseToken;
 import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -13,23 +12,20 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import java.util.Objects;
-
 @Aspect
 @Component
 @RequiredArgsConstructor
-public class AuthorizationAspect{
+public class AuthenticateAspect {
 
     private final AuthClient authClient;
 
-    @Before("@annotation(requiredAuthorization)")
-    public void checkAuthorization(RequiredAuthorization requiredAuthorization){
+    @Before("@annotation(com.cozastore.userservice.annotation.Authenticate)")
+    public void authenticate(){
         String token = getTokenFromRequest();
         if (token == null) {
             throw new RuntimeException("Unauthorized");
         }
         try {
-
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
             TokenDTO tokenDTO = new TokenDTO();
             tokenDTO.setAccessToken(token);
@@ -38,21 +34,14 @@ public class AuthorizationAspect{
             if (credential == null) {
                 throw new RuntimeException("Unauthorized");
             }
-            String roleName = credential.getRoleName();
-            if (!roleName.equals(requiredAuthorization.value()[0])){
-                throw new RuntimeException("Don't have permission to do this!");
-            }
         } catch (FeignException e) {
             throw new RuntimeException(e.getMessage());
         }
-
-
     }
 
     private String getTokenFromRequest() {
         // Get token from request headers
-        HttpServletRequest request = ((ServletRequestAttributes) (Objects.requireNonNull(
-                RequestContextHolder.getRequestAttributes()))).getRequest();
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         final String requestTokenHeader = request.getHeader("Authorization");
         if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
             return requestTokenHeader.substring(7);

@@ -1,5 +1,6 @@
 package com.cozastore.productservice.controller;
 
+import com.cozastore.productservice.annotation.RequiredAuthorization;
 import com.cozastore.productservice.dto.CategoryDTO;
 import com.cozastore.productservice.service.ICategoryService;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class CategoryController {
         return categoryService.getCategoryId(categoryId);
     }
 
+    @RequiredAuthorization("ROLE_ADMIN")
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional(rollbackFor = Exception.class)
@@ -43,6 +45,7 @@ public class CategoryController {
         return categoryService.createCategory(categoryDTO);
     }
 
+    @RequiredAuthorization("ROLE_ADMIN")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Transactional(rollbackFor = Exception.class)

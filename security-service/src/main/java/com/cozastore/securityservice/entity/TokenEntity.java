@@ -10,9 +10,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
 @Entity(name = "refresh_token")
-public class TokenEntity extends AbstractAuditingEntity{
+public class TokenEntity {
     @jakarta.persistence.Id
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
