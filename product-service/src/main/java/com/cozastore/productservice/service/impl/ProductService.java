@@ -114,4 +114,18 @@ public class ProductService implements IProductService {
                 }
         );
     }
+
+    @Override
+    public CompletableFuture<Boolean> getProductId(String id) {
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    if (!productRepository.existsById(id)){
+                        log.info("Product is not exist !");
+                        throw new RuntimeException("Product is not exist !");
+                    }
+                    log.info("Product is existed !");
+                    return productRepository.existsById(id);
+                }
+        );
+    }
 }

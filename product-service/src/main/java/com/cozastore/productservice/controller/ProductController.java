@@ -31,6 +31,14 @@ public class ProductController {
         return productService.getAllProduct(page, limit);
     }
 
+    @GetMapping("/{productId}")
+    @ResponseStatus(HttpStatus.OK)
+    @Transactional(readOnly = true)
+    public CompletableFuture<?> checkProductId(@PathVariable String productId){
+        log.info("get product is completed !");
+        return productService.getProductId(productId);
+    }
+
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional(rollbackFor = Exception.class)

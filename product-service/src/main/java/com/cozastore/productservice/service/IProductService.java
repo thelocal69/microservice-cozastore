@@ -9,4 +9,5 @@ public interface IProductService {
     CompletableFuture<ResponseOutput> getAllProduct(int page, int limit);
     CompletableFuture<Void> upsert(ProductDTO productDTO);
     CompletableFuture<Void> delete(String id);
+    CompletableFuture<Boolean> getProductId(String id);
 }

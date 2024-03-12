@@ -1,4 +1,4 @@
-package com.cozastore.orderservice.payload;
+package com.cozastore.mediaservice.payload;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResponseObject {
-    private int statusCode;
-    private String message;
-    private Object data;
+public class ResponseToken {
+    private String email;
+    private String roleName;
 }

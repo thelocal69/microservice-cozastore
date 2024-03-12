@@ -15,8 +15,6 @@ public class OrderConverter {
         order.setPrice(orderDTO.getPrice());
         order.setQuantity(orderDTO.getQuantity());
         order.setStatus(orderDTO.getStatus());
-        order.setUserId(orderDTO.getUserId());
-        order.setProductId(orderDTO.getProductId());
         return  order;
     }
 }

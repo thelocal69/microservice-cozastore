@@ -15,4 +15,5 @@ public interface IUserService {
     CompletableFuture<UserDetailDTO> getInformationUser(Long id);
     CompletableFuture<String> editProfileUser(UserDetailDTO userDetailDTO);
     CompletableFuture<Boolean> banUser(BanUserDTO banUserDTO);
+    CompletableFuture<Boolean> getIdUser(Long id);
 }

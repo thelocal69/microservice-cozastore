@@ -156,4 +156,20 @@ public class UserService implements IUserService {
                 }
         );
     }
+
+    @Async
+    @Override
+    @Transactional(readOnly = true)
+    public CompletableFuture<Boolean> getIdUser(Long id) {
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    if (!userRepository.existsById(id)){
+                        log.info("User id is not exist !");
+                        throw new RuntimeException("User id is not exist !");
+                    }
+                    log.info("User id is existed !");
+                    return userRepository.existsById(id);
+                }
+        );
+    }
 }

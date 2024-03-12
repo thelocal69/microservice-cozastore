@@ -78,6 +78,8 @@ spring:
           uri: http://localhost:${MEDIA.PORT:8089}
           predicates:
             - Path=/api/media/**
+          filters:
+            - AuthenticationFilter
 
         - id: search_service
           uri: http://localhost:${SEARCH.PORT:8087}
@@ -88,6 +90,8 @@ spring:
           uri: http://localhost:${ORDER.PORT:8081}
           predicates:
             - Path=/api/order/**
+          filters:
+            - AuthenticationFilter
 
         - id: user_service
           uri: http://localhost:${USER.PORT:8083}

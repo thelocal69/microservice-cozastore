@@ -8,3 +8,7 @@ path:
   root_path: ${user.home}/Desktop/cozastore_media/
   domain_url: http://localhost:${API_GATEWAY_PORT:9000}
 
+gate-way:
+  host: ${GATE_WAY_HOST:http://localhost}
+  port: ${GATE_WAY_PORT:9000}
+

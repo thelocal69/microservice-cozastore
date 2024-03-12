@@ -20,6 +20,7 @@ public class RoutersFilter {
             "/api/account/resend_active",
             "/api/account/gen_access",
             "/api/product",
+            "/api/media/{folderName}/{fileName}",
             "/eureka"
     );
 
