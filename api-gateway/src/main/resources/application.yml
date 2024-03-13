@@ -63,11 +63,29 @@ spring:
           uri: http://localhost:${BLOG.PORT:8084}
           predicates:
             - Path=/api/blog/**
+          filters:
+            - AuthenticationFilter
+
+        - id: tag_service
+          uri: http://localhost:${BLOG.PORT:8084}
+          predicates:
+            - Path=/api/tag/**
+          filters:
+            - AuthenticationFilter
+
+        - id: comment_service
+          uri: http://localhost:${BLOG.PORT:8084}
+          predicates:
+            - Path=/api/comment/**
+          filters:
+            - AuthenticationFilter
 
         - id: carousel_service
           uri: http://localhost:${CAROUSEL.PORT:8082}
           predicates:
             - Path=/api/carousel/**
+          filters:
+            - AuthenticationFilter
 
         - id: cart_service
           uri: http://localhost:${CART.PORT:8086}
@@ -78,8 +96,6 @@ spring:
           uri: http://localhost:${MEDIA.PORT:8089}
           predicates:
             - Path=/api/media/**
-          filters:
-            - AuthenticationFilter
 
         - id: search_service
           uri: http://localhost:${SEARCH.PORT:8087}

@@ -1,8 +1,8 @@
-package com.cozastore.carouselservice.controller;
+package com.cozastore.blogservice.controller;
 
-import com.cozastore.carouselservice.annotation.RequiredAuthorization;
-import com.cozastore.carouselservice.dto.CarouselDTO;
-import com.cozastore.carouselservice.service.ICarouselService;
+import com.cozastore.blogservice.annotation.RequiredAuthorization;
+import com.cozastore.blogservice.dto.TagDTO;
+import com.cozastore.blogservice.service.ITagService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,37 +15,37 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
-@RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/api/carousel")
-public class CarouselController {
+@RequiredArgsConstructor
+@RequestMapping("/api/tag")
+public class TagController {
 
-    private final ICarouselService carouselService;
+    private final ITagService tagService;
 
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
     @Transactional(readOnly = true)
-    public CompletableFuture<?> getAllCarousel(){
-        log.info("Get list carousel is completed !");
-        return carouselService.getAll();
+    public CompletableFuture<?> getAll(){
+        log.info("Get all tag is completed !");
+        return tagService.getAll();
     }
 
     @RequiredAuthorization("ROLE_ADMIN")
-    @PostMapping()
+    @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional(rollbackFor = Exception.class)
-    public CompletableFuture<?> createCarousel(@RequestBody CarouselDTO carouselDTO){
+    public CompletableFuture<?> createTag(@RequestBody TagDTO tagDTO){
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        log.info("Created carousel is completed !");
-        return carouselService.createCarousel(carouselDTO, request);
+        log.info("Create Tag is completed !");
+        return tagService.createTag(tagDTO, request);
     }
 
     @RequiredAuthorization("ROLE_ADMIN")
-    @DeleteMapping("/{carouselId}")
+    @DeleteMapping("/delete/{tagId}")
     @ResponseStatus(HttpStatus.OK)
     @Transactional(rollbackFor = Exception.class)
-    public CompletableFuture<?> deleteCarousel(@PathVariable String carouselId){
-        log.info("Delete carousel is completed !");
-        return carouselService.deleteCarousel(carouselId);
+    public CompletableFuture<?> deleteTag(@PathVariable String tagId){
+        log.info("Delete tag is completed !");
+        return tagService.deleteTag(tagId);
     }
 }

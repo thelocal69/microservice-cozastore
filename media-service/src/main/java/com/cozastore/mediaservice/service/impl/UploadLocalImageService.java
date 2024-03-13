@@ -33,12 +33,26 @@ public class UploadLocalImageService implements IUploadLocalImageService {
         );
     }
 
+    @Async
     @Override
     public CompletableFuture<String> uploadImageCarousel(MultipartFile file) {
         log.info("Upload carousel image is completed !");
         return CompletableFuture.supplyAsync(
                 () -> {
                     String folderName = "carousel";
+                    String fileName = uploadLocalImageUtil.storeFile(file, folderName);
+                    return domainURL+"/api/media/"+folderName+"/"+fileName;
+                }
+        );
+    }
+
+    @Async
+    @Override
+    public CompletableFuture<String> uploadImageUser(MultipartFile file) {
+        log.info("Upload user image is completed !");
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    String folderName = "user";
                     String fileName = uploadLocalImageUtil.storeFile(file, folderName);
                     return domainURL+"/api/media/"+folderName+"/"+fileName;
                 }

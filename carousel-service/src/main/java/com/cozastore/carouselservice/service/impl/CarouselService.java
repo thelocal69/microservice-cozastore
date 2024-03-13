@@ -6,6 +6,7 @@ import com.cozastore.carouselservice.entity.CarouselEntity;
 import com.cozastore.carouselservice.feign.ICategoryClient;
 import com.cozastore.carouselservice.repository.ICarouselRepository;
 import com.cozastore.carouselservice.service.ICarouselService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -44,11 +45,11 @@ public class CarouselService implements ICarouselService {
     @Async
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public CompletableFuture<Void> createCarousel(CarouselDTO carouselDTO) {
+    public CompletableFuture<Void> createCarousel(CarouselDTO carouselDTO, HttpServletRequest request) {
         return CompletableFuture.supplyAsync(
                 () -> {
                     CarouselEntity carouselEntity = carouselConverter.toCarouselEntity(carouselDTO);
-                    if (categoryClient.existCategoryId(carouselDTO.getCategoryId())){
+                    if (categoryClient.existCategoryId(request.getHeader("Authorization"), carouselDTO.getCategoryId())){
                         carouselEntity.setCategoryId(
                                 carouselDTO.getCategoryId()
                         );

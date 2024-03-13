@@ -72,11 +72,9 @@ public class ProductService implements IProductService {
                             log.info("Category or Size or Color is not exist !");
                             throw new RuntimeException("Category or Size or Color is not exist !");
                         }
-                        this.productRepository.save(
-                                productConverter.updateProduct(
+                               productModel = productConverter.updateProduct(
                                         this.productRepository.findById(productDTO.getId()).get(),
                                         productDTO
-                                )
                         );
                         log.info("Product id: "+productDTO.getId()+" update successfully !");
                     }

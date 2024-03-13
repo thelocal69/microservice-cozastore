@@ -6,6 +6,6 @@ import feign.RequestLine;
 
 public interface ICategoryClient {
     @RequestLine("GET /api/category/{categoryId}")
-    @Headers({"X-API-KEY: {requester}", "Content-Type: application/json"})
-    Boolean existCategoryId(@Param("categoryId") String categoryId);
+    @Headers({"Authorization: {requester}"})
+    Boolean existCategoryId(@Param("requester") String request ,@Param("categoryId") String categoryId);
 }

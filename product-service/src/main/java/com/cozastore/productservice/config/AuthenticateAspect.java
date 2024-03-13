@@ -23,7 +23,7 @@ public class AuthenticateAspect {
     public void authenticate(){
         String token = getTokenFromRequest();
         if (token == null) {
-            throw new RuntimeException("Unauthorized");
+            throw new RuntimeException("Unauthenticated");
         }
         try {
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
@@ -32,7 +32,7 @@ public class AuthenticateAspect {
             ResponseToken credential = authClient.getData(tokenDTO);
             request.setAttribute("user", credential);
             if (credential == null) {
-                throw new RuntimeException("Unauthorized");
+                throw new RuntimeException("Unauthenticated");
             }
         } catch (FeignException e) {
             throw new RuntimeException(e.getMessage());

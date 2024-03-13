@@ -1,8 +1,8 @@
-package com.cozastore.userservice.config;
+package com.cozastore.carouselservice.config;
 
-import com.cozastore.userservice.dto.TokenDTO;
-import com.cozastore.userservice.feign.AuthClient;
-import com.cozastore.userservice.payload.ResponseToken;
+import com.cozastore.carouselservice.dto.TokenDTO;
+import com.cozastore.carouselservice.feign.AuthClient;
+import com.cozastore.carouselservice.payload.ResponseToken;
 import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class AuthenticateAspect {
 
     private final AuthClient authClient;
 
-    @Before("@annotation(com.cozastore.userservice.annotation.Authenticate)")
+    @Before("@annotation(com.cozastore.carouselservice.annotation.Authenticate)")
     public void authenticate(){
         String token = getTokenFromRequest();
         if (token == null) {

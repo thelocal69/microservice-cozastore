@@ -1,5 +1,6 @@
 package com.cozastore.mediaservice.controller;
 
+import com.cozastore.mediaservice.annotation.Authenticate;
 import com.cozastore.mediaservice.annotation.RequiredAuthorization;
 import com.cozastore.mediaservice.service.IUploadLocalImageService;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,14 @@ public class UploadLocalImageController {
     public CompletableFuture<String> uploadCarouselImage(@RequestParam("fileName")MultipartFile file){
         log.info("Upload image carousel is completed !");
         return this.uploadLocalImageService.uploadImageCarousel(file);
+    }
+
+    @Authenticate
+    @PostMapping(value = "/user")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CompletableFuture<String> uploadUserImage(@RequestParam("fileName")MultipartFile file){
+        log.info("Upload image user is completed !");
+        return this.uploadLocalImageService.uploadImageUser(file);
     }
 
     @GetMapping(value = "/{folderName}/{fileName}", produces = MediaType.IMAGE_JPEG_VALUE)
