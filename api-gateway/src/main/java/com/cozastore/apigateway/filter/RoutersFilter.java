@@ -26,6 +26,7 @@ public class RoutersFilter {
             "/api/carousel",
             "/api/blog",
             "/api/tag",
+            "/api/comment",
             "/eureka"
     );
 
