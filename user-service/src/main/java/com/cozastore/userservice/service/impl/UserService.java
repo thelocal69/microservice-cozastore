@@ -6,6 +6,8 @@ import com.cozastore.userservice.dto.ChangePasswordDTO;
 import com.cozastore.userservice.dto.UserDTO;
 import com.cozastore.userservice.dto.UserDetailDTO;
 import com.cozastore.userservice.entity.UserEntity;
+import com.cozastore.userservice.exception.AccountException;
+import com.cozastore.userservice.exception.NotFoundException;
 import com.cozastore.userservice.payload.ResponseOutput;
 import com.cozastore.userservice.repository.IUserRepository;
 import com.cozastore.userservice.service.IUserService;
@@ -43,7 +45,7 @@ public class UserService implements IUserService {
                     );
                     if (userDTOList.isEmpty()){
                         log.info("List user is empty !");
-                        throw new RuntimeException("List user is empty !");
+                        throw new NotFoundException("List user is empty !");
                     }
                     int totalItem = (int) userRepository.count();
                     int totalPage = (int) Math.ceil((double) totalItem / limit);
@@ -66,7 +68,7 @@ public class UserService implements IUserService {
                 () -> {
                     if (!userRepository.existsById(id)){
                         log.info("User not found !");
-                        throw new RuntimeException("User not found !");
+                        throw new NotFoundException("User not found !");
                     }
                     log.info("Get user info is completed !");
                     return userConverter.toUserDTO(
@@ -85,11 +87,11 @@ public class UserService implements IUserService {
                     UserEntity user = userRepository.findOneById(changePasswordDTO.getId());
                     if (!(passwordEncoder.matches(changePasswordDTO.getCurrentPassword(), user.getPassword()))){
                         log.info("Wrong password !");
-                        throw new RuntimeException("Wrong password !");
+                        throw new AccountException("Wrong password !");
                     }
                     if (!(changePasswordDTO.getNewPassword().equals(changePasswordDTO.getConfirmPassword()))){
                         log.info("Password won't match !");
-                        throw new RuntimeException("Password won't match !");
+                        throw new AccountException("Password won't match !");
                     }
                     //update new password
                     user.setPassword(passwordEncoder.encode(changePasswordDTO.getConfirmPassword()));
@@ -108,7 +110,7 @@ public class UserService implements IUserService {
                 () -> {
                     if (!userRepository.existsById(id)){
                         log.info("User not found !");
-                        throw new RuntimeException("User not found !");
+                        throw new NotFoundException("User not found !");
                     }
                     log.info("Get user info is completed !");
                     return userConverter.toUserDetailDTO(
@@ -165,7 +167,7 @@ public class UserService implements IUserService {
                 () -> {
                     if (!userRepository.existsById(id)){
                         log.info("User id is not exist !");
-                        throw new RuntimeException("User id is not exist !");
+                        throw new NotFoundException("User id is not exist !");
                     }
                     log.info("User id is existed !");
                     return userRepository.existsById(id);

@@ -4,6 +4,7 @@ import com.cozastore.blogservice.converter.CommentConverter;
 import com.cozastore.blogservice.dto.CommentDTO;
 import com.cozastore.blogservice.entity.BlogEntity;
 import com.cozastore.blogservice.entity.CommentEntity;
+import com.cozastore.blogservice.exception.NotFoundException;
 import com.cozastore.blogservice.feign.IUserClient;
 import com.cozastore.blogservice.payload.ResponseOutput;
 import com.cozastore.blogservice.repository.IBlogRepository;
@@ -44,7 +45,7 @@ public class CommentService implements ICommentService {
                     );
                     if (commentDTOList.isEmpty()){
                         log.info("Comment list is empty !");
-                        throw new RuntimeException("Comment list is empty !");
+                        throw new NotFoundException("Comment list is empty !");
                     }
                     int totalItem = (int) commentRepository.count();
                     int totalPage = (int) Math.ceil((double) totalItem / limit);
@@ -69,11 +70,11 @@ public class CommentService implements ICommentService {
                     CommentEntity commentEntity = commentConverter.toCommentEntity(commentDTO);
                     if (!blogRepository.existsById(commentDTO.getBlogId())){
                         log.info("Blog id is not exist ! Cannot create !");
-                        throw new RuntimeException("Blog id is not exist ! Cannot create !");
+                        throw new NotFoundException("Blog id is not exist ! Cannot create !");
                     }
                     if (!userClient.checkUserId(request.getHeader("Authorization") ,commentEntity.getUserId())){
                         log.info("User id is not exist ! Cannot create !");
-                        throw new RuntimeException("User id is not exist ! Cannot create !");
+                        throw new NotFoundException("User id is not exist ! Cannot create !");
                     }
                     BlogEntity blog = blogRepository.findOneById(commentDTO.getBlogId());
                     commentEntity.setBlogId(blog);
@@ -92,7 +93,7 @@ public class CommentService implements ICommentService {
                 () -> {
                     if (!commentRepository.existsById(id)){
                         log.info("Comment is not exist ! Cannot delete !");
-                        throw new RuntimeException("Comment is not exist ! Cannot delete !");
+                        throw new NotFoundException("Comment is not exist ! Cannot delete !");
                     }
                     this.commentRepository.deleteById(id);
                     log.info("Delete comment is completed !");

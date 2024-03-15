@@ -2,6 +2,8 @@ package com.cozastore.productservice.service.impl;
 
 import com.cozastore.productservice.converter.SizeConverter;
 import com.cozastore.productservice.dto.SizeDTO;
+import com.cozastore.productservice.exception.BadRequestException;
+import com.cozastore.productservice.exception.NotFoundException;
 import com.cozastore.productservice.payload.ResponseOutput;
 import com.cozastore.productservice.repository.ISizeRepository;
 import com.cozastore.productservice.service.ISizeService;
@@ -31,7 +33,7 @@ public class SizeService implements ISizeService {
         Pageable pageable = PageRequest.of(page - 1, limit);
         if (sizeRepository.findAll(pageable).isEmpty()){
             log.info("List size is empty !");
-            throw new RuntimeException("List size is empty !");
+            throw new NotFoundException("List size is empty !");
         }
        List<SizeDTO> sizeDTOList = sizeConverter.toSizeDTOList(
                sizeRepository.findAll(pageable).getContent()
@@ -53,7 +55,7 @@ public class SizeService implements ISizeService {
                 () -> {
                     if (sizeRepository.existsByName(sizeDTO.getName())){
                         log.info("Size name is duplicated !");
-                        throw new RuntimeException("Size name is duplicated !");
+                        throw new BadRequestException("Size name is duplicated !");
                     }
                     this.sizeRepository.save(
                             sizeConverter.toSizeModel(
@@ -73,7 +75,7 @@ public class SizeService implements ISizeService {
                 () -> {
                     if (!sizeRepository.existsById(id)){
                         log.info("Size not exist ! Cannot delete size !");
-                        throw new RuntimeException("Size not exist ! Cannot delete size !");
+                        throw new NotFoundException("Size not exist ! Cannot delete size !");
                     }
                     this.sizeRepository.deleteById(id);
                     log.info("Delete size is completed !");

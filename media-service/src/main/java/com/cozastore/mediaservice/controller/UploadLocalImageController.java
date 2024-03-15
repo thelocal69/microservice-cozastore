@@ -44,6 +44,14 @@ public class UploadLocalImageController {
         return this.uploadLocalImageService.uploadImageUser(file);
     }
 
+    @Authenticate
+    @PostMapping(value = "/cloud")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CompletableFuture<String> uploadImageToCloud(@RequestParam("fileName")MultipartFile file){
+        log.info("Upload image to cloud is completed !");
+        return this.uploadLocalImageService.uploadImageToCloud(file);
+    }
+
     @GetMapping(value = "/{folderName}/{fileName}", produces = MediaType.IMAGE_JPEG_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public CompletableFuture<?> readImageUrl(

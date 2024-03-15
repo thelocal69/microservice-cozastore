@@ -9,4 +9,5 @@ public interface IUploadLocalImageService {
     CompletableFuture<String> uploadImageCarousel(MultipartFile file);
     CompletableFuture<String> uploadImageUser(MultipartFile file);
     CompletableFuture<byte[]> readImageUrl(String fileName, String folderName);
+    CompletableFuture<String> uploadImageToCloud(MultipartFile file);
 }

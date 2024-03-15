@@ -2,6 +2,7 @@ package com.cozastore.productservice.config;
 
 import com.cozastore.productservice.annotation.RequiredAuthorization;
 import com.cozastore.productservice.dto.TokenDTO;
+import com.cozastore.productservice.exception.ForbiddenException;
 import com.cozastore.productservice.feign.AuthClient;
 import com.cozastore.productservice.payload.ResponseToken;
 import feign.FeignException;
@@ -26,7 +27,7 @@ public class AuthorizationAspect{
     public void checkAuthorization(RequiredAuthorization requiredAuthorization){
         String token = getTokenFromRequest();
         if (token == null) {
-            throw new RuntimeException("Unauthorized");
+            throw new ForbiddenException("Unauthorized");
         }
         try {
 
@@ -36,11 +37,11 @@ public class AuthorizationAspect{
             ResponseToken credential = authClient.getData(tokenDTO);
             request.setAttribute("user", credential);
             if (credential == null) {
-                throw new RuntimeException("Unauthorized");
+                throw new ForbiddenException("Unauthorized");
             }
             String roleName = credential.getRoleName();
             if (!roleName.equals(requiredAuthorization.value()[0])){
-                throw new RuntimeException("Don't have permission to do this!");
+                throw new ForbiddenException("Don't have permission to do this!");
             }
         } catch (FeignException e) {
             throw new RuntimeException(e.getMessage());

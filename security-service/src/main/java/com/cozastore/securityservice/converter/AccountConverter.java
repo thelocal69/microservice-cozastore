@@ -16,7 +16,7 @@ public class AccountConverter {
 
     public UserEntity toUserEntity(RegisterDTO registerDTO){
         UserEntity userEntity = new UserEntity();
-        userEntity.setAvatarUrl("");
+        userEntity.setAvatarUrl("http://res.cloudinary.com/detvyr8w4/image/upload/v1710460378/lej4s77f8pbp4c9bs84v.png");
         userEntity.setEmail(registerDTO.getEmail());
         userEntity.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
         userEntity.setPhone("");

@@ -1,6 +1,7 @@
 package com.cozastore.userservice.config;
 
 import com.cozastore.userservice.dto.TokenDTO;
+import com.cozastore.userservice.exception.AuthenticateException;
 import com.cozastore.userservice.feign.AuthClient;
 import com.cozastore.userservice.payload.ResponseToken;
 import feign.FeignException;
@@ -23,7 +24,7 @@ public class AuthenticateAspect {
     public void authenticate(){
         String token = getTokenFromRequest();
         if (token == null) {
-            throw new RuntimeException("Unauthenticated");
+            throw new AuthenticateException("Unauthenticated");
         }
         try {
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
@@ -32,7 +33,7 @@ public class AuthenticateAspect {
             ResponseToken credential = authClient.getData(tokenDTO);
             request.setAttribute("user", credential);
             if (credential == null) {
-                throw new RuntimeException("Unauthenticated");
+                throw new AuthenticateException("Unauthenticated");
             }
         } catch (FeignException e) {
             throw new RuntimeException(e.getMessage());

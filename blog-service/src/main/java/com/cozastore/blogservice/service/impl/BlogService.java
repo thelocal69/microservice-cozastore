@@ -3,6 +3,7 @@ package com.cozastore.blogservice.service.impl;
 import com.cozastore.blogservice.converter.BlogConverter;
 import com.cozastore.blogservice.dto.BlogDTO;
 import com.cozastore.blogservice.entity.BlogEntity;
+import com.cozastore.blogservice.exception.NotFoundException;
 import com.cozastore.blogservice.feign.IUserClient;
 import com.cozastore.blogservice.payload.ResponseOutput;
 import com.cozastore.blogservice.repository.IBlogRepository;
@@ -40,7 +41,7 @@ public class BlogService implements IBlogService {
                     );
                     if (blogDTOList.isEmpty()){
                         log.info("Get list blog is empty !");
-                        throw new RuntimeException("Get list blog is empty !");
+                        throw new NotFoundException("Get list blog is empty !");
                     }
                     int totalItem = (int) blogRepository.count();
                     int totalPage = (int) Math.ceil((double) totalItem / limit);
@@ -65,18 +66,18 @@ public class BlogService implements IBlogService {
                     if (blogDTO.getId() != null){
                         if (!this.blogRepository.existsById(blogDTO.getId())){
                             log.info("Blog not found cannot update!");
-                            throw new RuntimeException("Blog not found cannot update!");
+                            throw new NotFoundException("Blog not found cannot update!");
                         }
                         if (!userClient.checkUserId(request.getHeader("Authorization"), blogEntity.getUserId())){
                             log.info("User id not exist !");
-                            throw new RuntimeException("User id not exist !");
+                            throw new NotFoundException("User id not exist !");
                         }
                         blogEntity = blogConverter.blogEntity(this.blogRepository.findOneById(blogDTO.getId()), blogDTO);
                         log.info("Update blog is completed !");
                     }
                     if (!userClient.checkUserId(request.getHeader("Authorization"), blogEntity.getUserId())){
                         log.info("User id not exist !");
-                        throw new RuntimeException("User id not exist !");
+                        throw new NotFoundException("User id not exist !");
                     }
                     this.blogRepository.save(blogEntity);
                     log.info("Create blog is completed !");
@@ -93,7 +94,7 @@ public class BlogService implements IBlogService {
                 () -> {
                     if (!this.blogRepository.existsById(id)){
                         log.info("Blog not exist ! Cannot delete !");
-                        throw new RuntimeException("Blog not exist ! Cannot delete !");
+                        throw new NotFoundException("Blog not exist ! Cannot delete !");
                     }
                     log.info("Delete blog is completed !");
                     this.blogRepository.deleteById(id);

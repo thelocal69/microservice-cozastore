@@ -2,6 +2,8 @@ package com.cozastore.productservice.service.impl;
 
 import com.cozastore.productservice.converter.CategoryConverter;
 import com.cozastore.productservice.dto.CategoryDTO;
+import com.cozastore.productservice.exception.BadRequestException;
+import com.cozastore.productservice.exception.NotFoundException;
 import com.cozastore.productservice.payload.ResponseOutput;
 import com.cozastore.productservice.repository.ICategoryRepository;
 import com.cozastore.productservice.service.ICategoryService;
@@ -30,7 +32,7 @@ public class CategoryService implements ICategoryService {
         Pageable pageable = PageRequest.of(page - 1, limit);
         if (this.categoryRepository.findAll(pageable).isEmpty()){
             log.info("List Category is empty !");
-            throw new RuntimeException("List Category is empty !");
+            throw new NotFoundException("List Category is empty !");
         }
         List<CategoryDTO> categoryDTOList = categoryConverter.toListCategoryDTO(
                 categoryRepository.findAll(pageable).getContent()
@@ -52,7 +54,7 @@ public class CategoryService implements ICategoryService {
                 () -> {
                     if (!this.categoryRepository.existsById(id)){
                         log.info("Category id is not exist !");
-                        throw new RuntimeException("Category id is not exist !");
+                        throw new NotFoundException("Category id is not exist !");
                     }
                     return this.categoryRepository.existsById(id);
                 }
@@ -67,7 +69,7 @@ public class CategoryService implements ICategoryService {
                 () -> {
                     if (categoryRepository.existsByName(categoryDTO.getName())){
                         log.info("Duplicated category name !");
-                        throw new RuntimeException("Duplicated category name !");
+                        throw new BadRequestException("Duplicated category name !");
                     }
                     this.categoryRepository.save(
                             categoryConverter.toCategoryModel(categoryDTO)
@@ -86,7 +88,7 @@ public class CategoryService implements ICategoryService {
                 () -> {
                     if (!categoryRepository.existsById(id)){
                         log.info("Category is not exist ! Cannot delete !");
-                        throw new RuntimeException("Category is not exist ! Cannot delete !");
+                        throw new NotFoundException("Category is not exist ! Cannot delete !");
                     }
                     this.categoryRepository.deleteById(id);
                     log.info("Delete Category is completed !");

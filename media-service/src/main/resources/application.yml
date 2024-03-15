@@ -12,3 +12,7 @@ gate-way:
   host: ${GATE_WAY_HOST:http://localhost}
   port: ${GATE_WAY_PORT:9000}
 
+cloudinary:
+  api-key: ${API_KEY:987765592191916}
+  api-secret: ${API_SECRET:Gp6JgFX8YiNmS2bkJcBQP4C7jJw}
+  cloud-name: ${CLOUD_NAME:detvyr8w4}

@@ -6,6 +6,9 @@ import com.cozastore.securityservice.entity.RoleEntity;
 import com.cozastore.securityservice.entity.TokenEntity;
 import com.cozastore.securityservice.entity.UserEntity;
 import com.cozastore.securityservice.entity.VerificationTokenEntity;
+import com.cozastore.securityservice.exception.AccountException;
+import com.cozastore.securityservice.exception.ForbiddenException;
+import com.cozastore.securityservice.exception.NotFoundException;
 import com.cozastore.securityservice.payload.ResponseAuthentication;
 import com.cozastore.securityservice.payload.ResponseToken;
 import com.cozastore.securityservice.repository.IRefreshTokenRepository;
@@ -58,14 +61,14 @@ public class AccountService implements IAccountService {
         return CompletableFuture.supplyAsync(() -> {
             if (userRepository.existsByEmailAndStatus(registerDTO.getEmail(), 1)){
                 log.info("Account is exist cannot register !");
-                throw new RuntimeException("Account is exist cannot register !");
+                throw new NotFoundException("Account is exist cannot register !");
             }
             if (userRepository.existsByEmailAndStatus(registerDTO.getEmail(), 0)){
                 log.info("Account is block !");
-                throw new RuntimeException("Account is block !");
+                throw new AccountException("Account is block !");
             }
             if (!roleRepository.existsByRoleName("ROLE_USER")){
-                throw new RuntimeException("Cannot authorization !");
+                throw new ForbiddenException("Cannot authorization !");
             }
             RoleEntity role = roleRepository.findByRoleName("ROLE_USER");
             UserEntity user = accountConverter.toUserEntity(registerDTO);
@@ -131,12 +134,12 @@ public class AccountService implements IAccountService {
                 () -> {
                     if (userRepository.existsByEmailAndStatus(loginDTO.getEmail(), 0)){
                         log.info("User is banned !");
-                        throw new RuntimeException("User is banned !");
+                        throw new AccountException("User is banned !");
                     }
                     UserEntity user = userRepository.findByEmailAndStatus(loginDTO.getEmail(), 1);
                     if (!user.getRole().getRoleName().equals("ROLE_USER")){
                         log.info("Permission denied !");
-                        throw new RuntimeException("Permission denied !");
+                        throw new ForbiddenException("Permission denied !");
                     }
                     return token(loginDTO.getEmail(), loginDTO.getPassword());
                 }
@@ -151,7 +154,7 @@ public class AccountService implements IAccountService {
                     UserEntity user = userRepository.findByEmailAndStatus(loginDTO.getEmail(), 1);
                     if (!user.getRole().getRoleName().equals("ROLE_ADMIN")){
                         log.info("Permission denied !");
-                        throw new RuntimeException("Permission denied !");
+                        throw new ForbiddenException("Permission denied !");
                     }
                     return token(loginDTO.getEmail(), loginDTO.getPassword());
                 }
@@ -165,7 +168,7 @@ public class AccountService implements IAccountService {
                 try {
                     if (tokenDTO.getAccessToken() == null){
                         log.info("Token is null !");
-                        throw new RuntimeException("Token is null !");
+                        throw new AccountException("Token is null !");
                     }
                     Claims data = jwtUtil.parserToken(tokenDTO.getAccessToken());
                     log.info("Token is valid !");
@@ -327,14 +330,14 @@ public class AccountService implements IAccountService {
                         try {
                             Claims data = jwtUtil.parserToken(accessRefreshTokenDTO.getRefreshToken());
                             if (data == null){
-                                throw new RuntimeException("AccessToken is null !");
+                                throw new AccountException("AccessToken is null !");
                             }
                             if (jwtUtil.isTokenExpired(accessRefreshTokenDTO.getRefreshToken())){
                                 boolean isVTokensExpired = refreshTokenRepository.findByToken(accessRefreshTokenDTO.getRefreshToken())
                                         .map(tokens ->
                                                 tokens.isExpired() && tokens.isRevoke()
                                         ).orElse(true);
-                                throw new RuntimeException("Refresh Token is expired !" + isVTokensExpired);
+                                throw new AccountException("Refresh Token is expired !" + isVTokensExpired);
                             }
                             boolean isValidTokens = refreshTokenRepository.findByToken(accessRefreshTokenDTO.getRefreshToken())
                                     .map(tokens ->
@@ -343,13 +346,13 @@ public class AccountService implements IAccountService {
 
                             if(!isValidTokens){
                                 log.info("Refresh token is expired or not exist !");
-                                throw new RuntimeException("Refresh token is expired or not exist !");
+                                throw new AccountException("Refresh token is expired or not exist !");
                             }
                             String email = data.getSubject();
                             UserEntity user = userRepository.findByEmail(email);
                             if (user == null || user.getStatus() == 0){
                                 log.info("User is not exist or blocked !");
-                                throw new RuntimeException("User is not exist or blocked !");
+                                throw new NotFoundException("User is not exist or blocked !");
                             }
                             ResponseToken responseToken = new ResponseToken();
                             responseToken.setEmail(email);
@@ -365,7 +368,7 @@ public class AccountService implements IAccountService {
                         }
                     }else {
                         log.info("Access Token is not expired !");
-                        throw new RuntimeException("Access Token is not expired !");
+                        throw new AccountException("Access Token is not expired !");
                     }
                 }
         );

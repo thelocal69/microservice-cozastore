@@ -67,4 +67,15 @@ public class UploadLocalImageService implements IUploadLocalImageService {
                 () -> uploadLocalImageUtil.readFileContent(fileName, folderName)
         ) ;
     }
+
+    @Async
+    @Override
+    public CompletableFuture<String> uploadImageToCloud(MultipartFile file) {
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    log.info("Upload image to cloud is completed !");
+                    return uploadLocalImageUtil.uploadToCloud(file);
+                }
+        );
+    }
 }

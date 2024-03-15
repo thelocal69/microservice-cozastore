@@ -60,5 +60,10 @@
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
             <groupId>org.springframework.cloud</groupId>
         </dependency>
+        <dependency>
+            <artifactId>cloudinary-http44</artifactId>
+            <groupId>com.cloudinary</groupId>
+            <version>1.35.0</version>
+        </dependency>
     </dependencies>
 </project>

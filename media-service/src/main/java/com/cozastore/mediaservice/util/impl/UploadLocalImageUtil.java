@@ -1,6 +1,10 @@
 package com.cozastore.mediaservice.util.impl;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import com.cozastore.mediaservice.exception.MediaException;
 import com.cozastore.mediaservice.util.IUploadLocalImageUtil;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -19,31 +23,35 @@ import java.util.Arrays;
 import java.util.UUID;
 
 @Component
+@RequiredArgsConstructor
 public class UploadLocalImageUtil implements IUploadLocalImageUtil {
 
     @Value("${path.root_path}")
     private String rootPath;
+    private final Cloudinary cloudinary;
 
     @Override
     public Boolean isImageFile(MultipartFile multipartFile) {
         String fileExtension = FilenameUtils.getExtension(multipartFile.getOriginalFilename());
-        assert fileExtension != null;
-        return Arrays.asList(new String[] {"png","jpg","jpeg", "bmp"})
-                .contains(fileExtension.trim().toLowerCase());
+        if (fileExtension != null){
+            return Arrays.asList(new String[] {"png","jpg","jpeg", "bmp"})
+                    .contains(fileExtension.trim().toLowerCase());
+        }
+        return false;
     }
 
     @Override
     public String storeFile(MultipartFile multipartFile, String folderName) {
         try {
             if (multipartFile.isEmpty()) {
-                throw new RuntimeException("Failed to store empty file.");
+                throw new MediaException("Failed to store empty file !");
             }
             if(!isImageFile(multipartFile)) {
-                throw new RuntimeException("You can only upload image file");
+                throw new MediaException("You can only upload image file !");
             }
             float fileSizeInMegabytes = multipartFile.getSize() / 1_000_000.0f;
             if(fileSizeInMegabytes > 5.0f) {
-                throw new RuntimeException("File must be <= 5Mb");
+                throw new MediaException("File must be <= 5Mb !");
             }
             String pathFolder = rootPath+folderName;
             Path storageFolder = Paths.get(pathFolder);
@@ -58,8 +66,8 @@ public class UploadLocalImageUtil implements IUploadLocalImageUtil {
                             pathImage)
                     .normalize().toAbsolutePath();
             if (!destinationFilePath.getParent().equals(storageFolder.toAbsolutePath())) {
-                throw new RuntimeException(
-                        "Cannot store file outside current directory.");
+                throw new MediaException(
+                        "Cannot store file outside current directory !");
             }
             try (InputStream inputStream = multipartFile.getInputStream()) {
                 Files.copy(inputStream, destinationFilePath, StandardCopyOption.REPLACE_EXISTING);
@@ -67,7 +75,7 @@ public class UploadLocalImageUtil implements IUploadLocalImageUtil {
             return generatedFileName;
         }
         catch (IOException exception) {
-            throw new RuntimeException("Failed to store file.", exception);
+            throw new RuntimeException("Failed to store file !", exception);
         }
     }
 
@@ -82,12 +90,36 @@ public class UploadLocalImageUtil implements IUploadLocalImageUtil {
                 return StreamUtils.copyToByteArray(resource.getInputStream());
             }
             else {
-                throw new RuntimeException(
+                throw new MediaException(
                         "Could not read file: " + fileName);
             }
         }
         catch (IOException exception) {
             throw new RuntimeException("Could not read file: " + fileName, exception);
+        }
+    }
+
+    @Override
+    public String uploadToCloud(MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new MediaException("Failed to store empty file !");
+        }
+        if(!isImageFile(file)) {
+            throw new MediaException("You can only upload image file !");
+        }
+        float fileSizeInMegabytes = file.getSize() / 1_000_000.0f;
+        if(fileSizeInMegabytes > 5.0f) {
+            throw new MediaException("File must be <= 5Mb !");
+        }
+        if (file.getOriginalFilename() == null) {
+            throw new MediaException("File name is blank !");
+        }
+        try {
+            return (String) cloudinary.uploader().upload(
+                    file.getBytes(), ObjectUtils.emptyMap()
+            ).get("url");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

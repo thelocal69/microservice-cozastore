@@ -3,6 +3,7 @@ package com.cozastore.productservice.service.impl;
 import com.cozastore.productservice.converter.ProductConverter;
 import com.cozastore.productservice.dto.ProductDTO;
 import com.cozastore.productservice.entity.ProductEntity;
+import com.cozastore.productservice.exception.NotFoundException;
 import com.cozastore.productservice.payload.ResponseOutput;
 import com.cozastore.productservice.repository.ICategoryRepository;
 import com.cozastore.productservice.repository.IColorRepository;
@@ -37,7 +38,7 @@ public class ProductService implements IProductService {
         Pageable pageable = PageRequest.of(page - 1, limit);
         if (this.productRepository.findAll(pageable).isEmpty()){
             log.info("List Product not found !");
-            throw new RuntimeException("List Product not found !");
+            throw new NotFoundException("List Product not found !");
         }
         List<ProductDTO> productDTOList = productConverter.toListProductDTO(
                 productRepository.findAll(pageable).getContent()
@@ -62,7 +63,7 @@ public class ProductService implements IProductService {
                     if (productModel.getId() != null){
                         if (this.productRepository.findById(productDTO.getId()).isEmpty()){
                             log.info("Product not found ! Can not update !");
-                            throw new RuntimeException("Product not found ! Can not update !");
+                            throw new NotFoundException("Product not found ! Can not update !");
                         }
                         if (
                                 !categoryRepository.existsByName(productDTO.getCategory()) ||
@@ -70,7 +71,7 @@ public class ProductService implements IProductService {
                                         !colorRepository.existsByName(productDTO.getColor())
                         ){
                             log.info("Category or Size or Color is not exist !");
-                            throw new RuntimeException("Category or Size or Color is not exist !");
+                            throw new NotFoundException("Category or Size or Color is not exist !");
                         }
                                productModel = productConverter.updateProduct(
                                         this.productRepository.findById(productDTO.getId()).get(),
@@ -84,7 +85,7 @@ public class ProductService implements IProductService {
                                     !colorRepository.existsByName(productDTO.getColor())
                     ){
                         log.info("Category or Size or Color is not exist !");
-                        throw new RuntimeException("Category or Size or Color is not exist !");
+                        throw new NotFoundException("Category or Size or Color is not exist !");
                     }
                     productModel.setCategory(categoryRepository.findByName(productDTO.getCategory()));
                     productModel.setSize(sizeRepository.findByName(productDTO.getSize()));
@@ -104,7 +105,7 @@ public class ProductService implements IProductService {
                 () -> {
                     if (!productRepository.existsById(id)){
                         log.info("Can not delete product ! product not exist !");
-                        throw new RuntimeException("Can not delete product ! product not exist !");
+                        throw new NotFoundException("Can not delete product ! product not exist !");
                     }
                     this.productRepository.deleteById(id);
                     log.info("Delete product is completed !");
@@ -119,7 +120,7 @@ public class ProductService implements IProductService {
                 () -> {
                     if (!productRepository.existsById(id)){
                         log.info("Product is not exist !");
-                        throw new RuntimeException("Product is not exist !");
+                        throw new NotFoundException("Product is not exist !");
                     }
                     log.info("Product is existed !");
                     return productRepository.existsById(id);
