@@ -91,6 +91,8 @@ spring:
           uri: http://localhost:${CART.PORT:8086}
           predicates:
             - Path=/api/cart/**
+          filters:
+            - AuthenticationFilter
 
         - id: media_service
           uri: http://localhost:${MEDIA.PORT:8089}

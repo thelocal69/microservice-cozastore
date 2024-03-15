@@ -3,6 +3,7 @@ package com.cozastore.orderservice.dto;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 @Builder
 @Getter
@@ -17,4 +18,5 @@ public class OrderDTO {
     private BigDecimal price;
     private int quantity;
     private int status;
+    private Timestamp createdDate;
 }

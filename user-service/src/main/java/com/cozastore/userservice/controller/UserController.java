@@ -61,7 +61,7 @@ public class UserController {
     }
 
     @RequiredAuthorization("ROLE_USER")
-    @PostMapping("/edit")
+    @PutMapping("/edit")
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional(rollbackFor = Exception.class)
     public CompletableFuture<?> editProfile(@RequestBody UserDetailDTO userDetailDTO){
@@ -70,7 +70,7 @@ public class UserController {
     }
 
     @RequiredAuthorization("ROLE_USER")
-    @PostMapping("/change_password")
+    @PutMapping("/change_password")
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional(rollbackFor = Exception.class)
     public CompletableFuture<?> changePassword(@RequestBody ChangePasswordDTO changePasswordDTO){
@@ -79,7 +79,7 @@ public class UserController {
     }
 
     @RequiredAuthorization("ROLE_ADMIN")
-    @PostMapping("/banned")
+    @PutMapping("/banned")
     @ResponseStatus(HttpStatus.OK)
     @Transactional(rollbackFor = Exception.class)
     public CompletableFuture<?> banned(@RequestBody BanUserDTO banUserDTO){

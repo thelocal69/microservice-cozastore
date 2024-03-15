@@ -44,7 +44,7 @@ public class BlogController {
     }
 
     @Authenticate
-    @PostMapping("/edit/{blogId}")
+    @PutMapping("/edit/{blogId}")
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional(rollbackFor = Exception.class)
     public CompletableFuture<?> editBlog(@PathVariable String blogId, @RequestBody BlogDTO blogDTO){

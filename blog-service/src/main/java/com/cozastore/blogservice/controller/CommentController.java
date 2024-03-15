@@ -33,7 +33,7 @@ public class CommentController {
     }
 
     @Authenticate
-    @PostMapping("/create")
+    @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional(rollbackFor = Exception.class)
     public CompletableFuture<?> createComment(@RequestBody CommentDTO commentDTO){
@@ -43,7 +43,7 @@ public class CommentController {
     }
 
     @Authenticate
-    @DeleteMapping("/delete/{commentId}")
+    @DeleteMapping("/{commentId}")
     @ResponseStatus(HttpStatus.OK)
     @Transactional(rollbackFor = Exception.class)
     public CompletableFuture<?> deleteComment(@PathVariable String commentId){

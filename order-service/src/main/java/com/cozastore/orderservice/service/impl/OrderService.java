@@ -3,17 +3,22 @@ package com.cozastore.orderservice.service.impl;
 import com.cozastore.orderservice.converter.OrderConverter;
 import com.cozastore.orderservice.dto.OrderDTO;
 import com.cozastore.orderservice.entity.OrderEntity;
+import com.cozastore.orderservice.exception.NotFoundException;
 import com.cozastore.orderservice.feign.IProductClient;
 import com.cozastore.orderservice.feign.IUserClient;
+import com.cozastore.orderservice.payload.ResponseOutput;
 import com.cozastore.orderservice.repository.IOrderRepository;
 import com.cozastore.orderservice.service.IOrderService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -24,6 +29,34 @@ public class OrderService implements IOrderService {
     private final OrderConverter orderConverter;
     private final IProductClient productClient;
     private final IUserClient userClient;
+
+    @Async
+    @Override
+    @Transactional(readOnly = true)
+    public CompletableFuture<ResponseOutput> getAllOrder(Long userId ,int page, int limit) {
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    Pageable pageable = PageRequest.of(page - 1, limit);
+                    List<OrderDTO> orderDTOList = orderConverter.toOrderDTOList(
+                            orderRepository.findAllByUserId(userId, pageable)
+                    );
+                    if (orderDTOList.isEmpty()){
+                        log.info("Order list is empty !");
+                        throw new NotFoundException("Order list is empty !");
+                    }
+                    int totalItem = orderRepository.countAllByUserId(userId);
+                    int totalPage = (int) Math.ceil((double) totalItem / limit);
+                    log.info("Get list order is completed !");
+                    return ResponseOutput
+                            .builder()
+                            .page(page)
+                            .totalItem(totalItem)
+                            .totalPage(totalPage)
+                            .data(orderDTOList)
+                            .build();
+                }
+        );
+    }
 
     @Async
     @Override

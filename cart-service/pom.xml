@@ -37,6 +37,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <artifactId>aspectjweaver</artifactId>
+            <groupId>org.aspectj</groupId>
+        </dependency>
+        <dependency>
             <artifactId>feign-okhttp</artifactId>
             <groupId>io.github.openfeign</groupId>
             <version>10.11</version>

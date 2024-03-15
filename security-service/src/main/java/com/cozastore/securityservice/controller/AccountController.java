@@ -65,7 +65,7 @@ public class AccountController {
         return this.accountService.forgotPassword(email);
     }
 
-    @PostMapping("/set_password")
+    @PutMapping("/set_password")
     @ResponseStatus(HttpStatus.OK)
     @Transactional(rollbackFor = Exception.class)
     public CompletableFuture<?> setPassword(@RequestBody ResetPasswordDTO resetPasswordDTO){

@@ -23,6 +23,19 @@ public class OrderController {
     private final IOrderService orderService;
 
     @RequiredAuthorization("ROLE_USER")
+    @GetMapping()
+    @ResponseStatus(HttpStatus.OK)
+    @Transactional(readOnly = true)
+    public CompletableFuture<?> getAllOrder(
+            @RequestParam Long userId,
+            @RequestParam int page,
+            @RequestParam int limit
+    ){
+        log.info("Get all order is completed !");
+        return orderService.getAllOrder(userId, page, limit);
+    }
+
+    @RequiredAuthorization("ROLE_USER")
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional(rollbackFor = Exception.class)

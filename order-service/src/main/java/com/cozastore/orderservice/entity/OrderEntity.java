@@ -12,6 +12,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Getter
@@ -41,11 +42,11 @@ public class OrderEntity{
     private String createdBy;
     @CreatedDate
     @Column(name = "created_date")
-    private Date createdDate;
+    private Timestamp createdDate;
     @LastModifiedBy
     @Column(name = "last_modified_by")
     private String lastModifiedBy;
     @LastModifiedDate
     @Column(name = "last_modified_date")
-    private Date lastModifiedDate;
+    private Timestamp lastModifiedDate;
 }

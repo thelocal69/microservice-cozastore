@@ -31,7 +31,7 @@ public class TagController {
     }
 
     @RequiredAuthorization("ROLE_ADMIN")
-    @PostMapping("/create")
+    @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional(rollbackFor = Exception.class)
     public CompletableFuture<?> createTag(@RequestBody TagDTO tagDTO){
@@ -41,7 +41,7 @@ public class TagController {
     }
 
     @RequiredAuthorization("ROLE_ADMIN")
-    @DeleteMapping("/delete/{tagId}")
+    @DeleteMapping("/{tagId}")
     @ResponseStatus(HttpStatus.OK)
     @Transactional(rollbackFor = Exception.class)
     public CompletableFuture<?> deleteTag(@PathVariable String tagId){
