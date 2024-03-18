@@ -31,8 +31,9 @@ public class OrderController {
             @RequestParam int page,
             @RequestParam int limit
     ){
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         log.info("Get all order is completed !");
-        return orderService.getAllOrder(userId, page, limit);
+        return orderService.getAllOrder(userId, page, limit, request);
     }
 
     @RequiredAuthorization("ROLE_USER")

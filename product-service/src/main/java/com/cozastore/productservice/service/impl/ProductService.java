@@ -10,6 +10,7 @@ import com.cozastore.productservice.repository.IColorRepository;
 import com.cozastore.productservice.repository.IProductRepository;
 import com.cozastore.productservice.repository.ISizeRepository;
 import com.cozastore.productservice.service.IProductService;
+import com.cozastore.productservice.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +31,7 @@ public class ProductService implements IProductService {
     private final ISizeRepository sizeRepository;
     private final IColorRepository colorRepository;
     private final ICategoryRepository categoryRepository;
+    private final RedisUtil redisUtil;
 
     @Async
     @Override
@@ -45,10 +47,50 @@ public class ProductService implements IProductService {
         );
         int totalItem = (int) productRepository.count();
         int totalPage = (int) Math.ceil((double) totalItem / limit);
+        log.info("Get all product is completed !");
         return CompletableFuture.supplyAsync(
                 () -> new ResponseOutput(
                         page, totalPage, totalItem, productDTOList
                 )
+        );
+    }
+
+    @Async
+    @Override
+    @Transactional(readOnly = true)
+    public CompletableFuture<ResponseOutput> getAllProductByCategory(String categoryId, int page, int limit) {
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    if (!categoryRepository.existsById(categoryId)){
+                        log.info("Category is not exist ! Cannot get all product !");
+                        throw new NotFoundException("Category is not exist ! Cannot get all product !");
+                    }
+                    Pageable pageable = PageRequest.of(page - 1, limit);
+                    List<ProductDTO> productDTOList = productConverter.toListProductDTO(
+                            productRepository.findAllByCategory_Id(categoryId ,pageable)
+                    );
+                    if (productDTOList.isEmpty()){
+                        log.info("List Product not found !");
+                        throw new NotFoundException("List Product not found !");
+                    }
+                    int totalItem = productRepository.countAllByCategory_Id(categoryId);
+                    int totalPage = (int) Math.ceil((double) totalItem / limit);
+                    ResponseOutput dataCache = this.redisUtil.getAllRedis(categoryId, "getAllProductCategory", page, limit);
+                    if (dataCache == null){
+                        log.info("Get all product by category is completed !");
+                        ResponseOutput dataDB = ResponseOutput
+                                .builder()
+                                .page(page)
+                                .totalItem(totalItem)
+                                .totalPage(totalPage)
+                                .data(productDTOList)
+                                .build();
+                        this.redisUtil.saveToRedis(categoryId, "getAllProductCategory", page, limit, dataDB);
+                        return dataDB;
+                    }
+                    log.info("Get all product by category is completed !");
+                    return dataCache;
+                }
         );
     }
 
@@ -60,6 +102,7 @@ public class ProductService implements IProductService {
         return CompletableFuture.supplyAsync(
                 () -> {
                     ProductEntity productModel = productConverter.toProductModel(productDTO);
+                    this.redisUtil.clear();
                     if (productModel.getId() != null){
                         if (this.productRepository.findById(productDTO.getId()).isEmpty()){
                             log.info("Product not found ! Can not update !");
@@ -103,6 +146,7 @@ public class ProductService implements IProductService {
     public CompletableFuture<Void> delete(String id) {
         return CompletableFuture.supplyAsync(
                 () -> {
+                    this.redisUtil.clear();
                     if (!productRepository.existsById(id)){
                         log.info("Can not delete product ! product not exist !");
                         throw new NotFoundException("Can not delete product ! product not exist !");

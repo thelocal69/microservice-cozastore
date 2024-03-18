@@ -20,6 +20,7 @@ public class RoutersFilter {
             "/api/account/resend_active",
             "/api/account/gen_access",
             "/api/product",
+            "/api/product/category",
             "/api/category",
             "/api/color",
             "/api/size",

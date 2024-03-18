@@ -33,6 +33,20 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <artifactId>spring-data-elasticsearch</artifactId>
+            <groupId>org.springframework.data</groupId>
+        </dependency>
+        <dependency>
+            <artifactId>elasticsearch-rest-client</artifactId>
+            <groupId>org.elasticsearch.client</groupId>
+            <version>8.10.4</version>
+        </dependency>
+        <dependency>
+            <artifactId>transport</artifactId>
+            <groupId>org.elasticsearch.client</groupId>
+            <version>7.17.2</version>
+        </dependency>
+        <dependency>
             <artifactId>feign-okhttp</artifactId>
             <groupId>io.github.openfeign</groupId>
             <version>10.11</version>

@@ -8,3 +8,8 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:${EUREKA.PORT:8761}/eureka
+
+elasticsearch:
+  clustername: elasticsearch
+  url: ${URL_ELASTIC:localhost:9200}
+  username: ${USERNAME_ELASTIC:elastic}

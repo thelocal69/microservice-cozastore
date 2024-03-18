@@ -31,6 +31,18 @@ public class ProductController {
         return productService.getAllProduct(page, limit);
     }
 
+    @GetMapping("/category")
+    @ResponseStatus(HttpStatus.OK)
+    @Transactional(readOnly = true)
+    public CompletableFuture<?> getAllProductByCategory(
+            @RequestParam String categoryId,
+            @RequestParam int page,
+            @RequestParam int limit
+    ){
+        log.info("get all product by category is completed !");
+        return productService.getAllProductByCategory(categoryId ,page, limit);
+    }
+
     @GetMapping("/{productId}")
     @ResponseStatus(HttpStatus.OK)
     @Transactional(readOnly = true)
