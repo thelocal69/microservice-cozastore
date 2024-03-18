@@ -2,6 +2,8 @@ package com.cozastore.productservice.service.impl;
 
 import com.cozastore.productservice.converter.ColorConverter;
 import com.cozastore.productservice.dto.ColorDTO;
+import com.cozastore.productservice.exception.BadRequestException;
+import com.cozastore.productservice.exception.NotFoundException;
 import com.cozastore.productservice.payload.ResponseOutput;
 import com.cozastore.productservice.repository.IColorRepository;
 import com.cozastore.productservice.service.IColorService;
@@ -14,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -32,7 +33,7 @@ public class ColorService implements IColorService {
         Pageable pageable = PageRequest.of(page - 1, limit);
         if (colorRepository.findAll(pageable).isEmpty()){
             log.info("List color not found !");
-            throw new RuntimeException("List color not found !");
+            throw new NotFoundException("List color not found !");
         }
         List<ColorDTO> colorDTOList = colorConverter.toColorDTOList(
                 colorRepository.findAll(pageable).getContent()
@@ -54,7 +55,7 @@ public class ColorService implements IColorService {
                 () -> {
                     if (colorRepository.existsByName(colorDTO.getName())){
                         log.info("Color name is duplicated !");
-                        throw new RuntimeException("Color name is duplicated !");
+                        throw new BadRequestException("Color name is duplicated !");
                     }
                     this.colorRepository.save(
                             colorConverter.toColorModel(
@@ -75,7 +76,7 @@ public class ColorService implements IColorService {
                 () -> {
                     if (!colorRepository.existsById(id)){
                         log.info("Color not exist ! Cannot delete !");
-                        throw new RuntimeException("Color not exist ! Cannot delete !");
+                        throw new NotFoundException("Color not exist ! Cannot delete !");
                     }
                     this.colorRepository.deleteById(id);
                     log.info("Delete color is completed !");

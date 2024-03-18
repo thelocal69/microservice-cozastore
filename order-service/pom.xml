@@ -37,6 +37,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <artifactId>aspectjweaver</artifactId>
+            <groupId>org.aspectj</groupId>
+        </dependency>
+        <dependency>
             <artifactId>feign-okhttp</artifactId>
             <groupId>io.github.openfeign</groupId>
             <version>10.11</version>
@@ -68,6 +72,20 @@
         <dependency>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
             <groupId>org.springframework.cloud</groupId>
+        </dependency>
+        <dependency>
+            <groupId>io.lettuce</groupId>
+            <artifactId>lettuce-core</artifactId>
+            <version>6.3.1.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
         </dependency>
     </dependencies>
     

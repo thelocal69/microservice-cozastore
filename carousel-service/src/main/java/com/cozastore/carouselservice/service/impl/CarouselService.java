@@ -3,9 +3,11 @@ package com.cozastore.carouselservice.service.impl;
 import com.cozastore.carouselservice.converter.CarouselConverter;
 import com.cozastore.carouselservice.dto.CarouselDTO;
 import com.cozastore.carouselservice.entity.CarouselEntity;
+import com.cozastore.carouselservice.exception.NotFoundException;
 import com.cozastore.carouselservice.feign.ICategoryClient;
 import com.cozastore.carouselservice.repository.ICarouselRepository;
 import com.cozastore.carouselservice.service.ICarouselService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -32,7 +34,7 @@ public class CarouselService implements ICarouselService {
                 () -> {
                     if (this.carouselRepository.findAll().isEmpty()){
                         log.info("List carousel is empty !");
-                        throw new RuntimeException("List carousel is empty !");
+                        throw new NotFoundException("List carousel is empty !");
                     }
                     return this.carouselConverter.toCarouselDTOList(
                             carouselRepository.findAll()
@@ -44,11 +46,11 @@ public class CarouselService implements ICarouselService {
     @Async
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public CompletableFuture<Void> createCarousel(CarouselDTO carouselDTO) {
+    public CompletableFuture<Void> createCarousel(CarouselDTO carouselDTO, HttpServletRequest request) {
         return CompletableFuture.supplyAsync(
                 () -> {
                     CarouselEntity carouselEntity = carouselConverter.toCarouselEntity(carouselDTO);
-                    if (categoryClient.existCategoryId(carouselDTO.getCategoryId())){
+                    if (categoryClient.existCategoryId(request.getHeader("Authorization"), carouselDTO.getCategoryId())){
                         carouselEntity.setCategoryId(
                                 carouselDTO.getCategoryId()
                         );
@@ -68,7 +70,7 @@ public class CarouselService implements ICarouselService {
                 () -> {
                     if (!this.carouselRepository.existsById(id)){
                         log.info("Cannot delete carousel ! Carousel is not exist !");
-                        throw new RuntimeException("Carousel not exist !");
+                        throw new NotFoundException("Carousel not exist !");
                     }
                     this.carouselRepository.deleteById(id);
                     log.info("Delete carousel is completed !");

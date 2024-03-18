@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 public class UploadLocalImageService implements IUploadLocalImageService {
 
     private final IUploadLocalImageUtil uploadLocalImageUtil;
-    @Value("${domain_url}")
+    @Value("${path.domain_url}")
     private String domainURL;
 
     @Async
@@ -33,6 +33,7 @@ public class UploadLocalImageService implements IUploadLocalImageService {
         );
     }
 
+    @Async
     @Override
     public CompletableFuture<String> uploadImageCarousel(MultipartFile file) {
         log.info("Upload carousel image is completed !");
@@ -47,10 +48,34 @@ public class UploadLocalImageService implements IUploadLocalImageService {
 
     @Async
     @Override
+    public CompletableFuture<String> uploadImageUser(MultipartFile file) {
+        log.info("Upload user image is completed !");
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    String folderName = "user";
+                    String fileName = uploadLocalImageUtil.storeFile(file, folderName);
+                    return domainURL+"/api/media/"+folderName+"/"+fileName;
+                }
+        );
+    }
+
+    @Async
+    @Override
     public CompletableFuture<byte[]> readImageUrl(String fileName, String folderName) {
         log.info("Read product image is completed !");
         return CompletableFuture.supplyAsync(
                 () -> uploadLocalImageUtil.readFileContent(fileName, folderName)
         ) ;
+    }
+
+    @Async
+    @Override
+    public CompletableFuture<String> uploadImageToCloud(MultipartFile file) {
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    log.info("Upload image to cloud is completed !");
+                    return uploadLocalImageUtil.uploadToCloud(file);
+                }
+        );
     }
 }

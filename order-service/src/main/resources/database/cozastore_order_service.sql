@@ -5,7 +5,7 @@ CREATE TABLE order_product(
                               id bigint auto_increment,
                               order_no varchar(255) not null unique,
                                 user_id bigint not null,
-                              product_id bigint not null ,
+                              product_id varchar(512) not null ,
                                 status int not null ,
                               quantity int,
                               price decimal(12, 2),

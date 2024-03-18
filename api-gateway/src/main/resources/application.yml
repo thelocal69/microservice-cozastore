@@ -1,0 +1,149 @@
+spring:
+  application:
+    name: api-gateway
+  main:
+    web-application-type: reactive
+  cloud:
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      globals:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+      routes:
+        - id: discovery_server
+          uri: http://localhost:${EUREKA.PORT:8761}/eureka
+          predicates:
+            - Path=/eureka/web
+
+        - id: discovery_server_static
+          uri: http://localhost:${EUREKA.PORT:8761}/eureka
+          predicates:
+            - Path=/eureka/**
+
+        - id: security_service
+          uri: http://localhost:${SECURITY.PORT:8085}
+          predicates:
+            - Path=/api/account/**
+          filters:
+            - AuthenticationFilter
+
+        - id: product_service
+          uri: http://localhost:${PRODUCT.PORT:8080}
+          predicates:
+            - Path=/api/product/**
+          filters:
+            - AuthenticationFilter
+
+        - id: category_service
+          uri: http://localhost:${PRODUCT.PORT:8080}
+          predicates:
+            - Path=/api/category/**
+          filters:
+            - AuthenticationFilter
+
+        - id: color_service
+          uri: http://localhost:${PRODUCT.PORT:8080}
+          predicates:
+            - Path=/api/color/**
+          filters:
+            - AuthenticationFilter
+
+        - id: size_service
+          uri: http://localhost:${PRODUCT.PORT:8080}
+          predicates:
+            - Path=/api/size/**
+          filters:
+            - AuthenticationFilter
+
+        - id: blog_service
+          uri: http://localhost:${BLOG.PORT:8084}
+          predicates:
+            - Path=/api/blog/**
+          filters:
+            - AuthenticationFilter
+
+        - id: tag_service
+          uri: http://localhost:${BLOG.PORT:8084}
+          predicates:
+            - Path=/api/tag/**
+          filters:
+            - AuthenticationFilter
+
+        - id: comment_service
+          uri: http://localhost:${BLOG.PORT:8084}
+          predicates:
+            - Path=/api/comment/**
+          filters:
+            - AuthenticationFilter
+
+        - id: carousel_service
+          uri: http://localhost:${CAROUSEL.PORT:8082}
+          predicates:
+            - Path=/api/carousel/**
+          filters:
+            - AuthenticationFilter
+
+        - id: cart_service
+          uri: http://localhost:${CART.PORT:8086}
+          predicates:
+            - Path=/api/cart/**
+          filters:
+            - AuthenticationFilter
+
+        - id: media_service
+          uri: http://localhost:${MEDIA.PORT:8089}
+          predicates:
+            - Path=/api/media/**
+
+        - id: search_service
+          uri: http://localhost:${SEARCH.PORT:8087}
+          predicates:
+            - Path=/api/search/**
+
+        - id: order_service
+          uri: http://localhost:${ORDER.PORT:8081}
+          predicates:
+            - Path=/api/order/**
+          filters:
+            - AuthenticationFilter
+
+        - id: user_service
+          uri: http://localhost:${USER.PORT:8083}
+          predicates:
+            - Path=/api/user/**
+          filters:
+            - AuthenticationFilter
+
+server:
+  port: ${API_GATEWAY_PORT:9000}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:${EUREKA.PORT:8761}/eureka
+
+logging:
+  level:
+    root: info
+    org:
+      springframework:
+        cloud:
+          gateway:
+            route:
+              RouteDefinitionLocator: info
+
+jwt:
+  public-key: |
+    -----BEGIN PUBLIC KEY-----
+    MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuS4E8FXeWgO+xWGpYaCg
+    QzuPQCnd6Eb7++WQ6C60rh1y+eb/SPctg7uuAr4huOH0FbYPmoi0wDJuu3vP4E48
+    rxi672LGjG+1xCUI78SHVZj6Movfae9lkzN4duxA+UReIVcXD2FyovDUgj6VyMUE
+    NcEtKtbthzOTEoAXEFNEfifhF4QYbgv1yAbksYljSpUKjyBNOIU/xZjDt4wkktWl
+    VQJy6ioWQMuBdj2LQ7lxtED0O48p9hzvzhMoO/mC6hcjHdKngJ3XreWE3iqrZ/Bf
+    6rKx493VoAW/5ep2XpdZVqE0i/j427IARex+nd/uz1Q/KoeXWnuXOwzOcctHVP1L
+    HwIDAQAB
+    -----END PUBLIC KEY-----
