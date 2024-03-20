@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.concurrent.CompletableFuture;
 
 public interface ICartService {
-    CompletableFuture<ResponseOutput> getAll(Long userId, int page, int limit);
+    CompletableFuture<ResponseOutput> getAll(String userId, int page, int limit);
     CompletableFuture<Void> addCartItem(CartDTO cartDTO, HttpServletRequest request);
     CompletableFuture<Void> updateCartItem(CartDTO cartDTO);
     CompletableFuture<Void> deleteCartItem(CartDTO cartDTO);

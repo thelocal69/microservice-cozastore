@@ -25,17 +25,17 @@ public class RedisUtil {
         defaultStringRedisConnection.flushAll();
     }
 
-    public  String getKeyFrom(Long id, String keyName ,int page, int limit){
+    public  String getKeyFrom(String id, String keyName ,int page, int limit){
         return String.format("%s:%d:%d", keyName, page, limit);
     }
 
-    public ResponseOutput getAllRedis(Long id, String keyName, int page, int  limit){
+    public ResponseOutput getAllRedis(String id, String keyName, int page, int  limit){
         String key = getKeyFrom(id, keyName, page, limit);
         String json =this.redisTemplate.opsForValue().get(key);
         return json != null ? gson.fromJson(json, new TypeToken<ResponseOutput>(){}.getType()) : null;
     }
 
-    public void saveToRedis(Long id, String keyName, int page, int limit, ResponseOutput responseOutput) {
+    public void saveToRedis(String id, String keyName, int page, int limit, ResponseOutput responseOutput) {
         String key = getKeyFrom(id, keyName, page, limit);
         String json = gson.toJson(responseOutput);
         this.redisTemplate.opsForValue().set(key, json);

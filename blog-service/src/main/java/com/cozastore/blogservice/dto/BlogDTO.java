@@ -14,7 +14,7 @@ public class BlogDTO {
     private String title;
     private String imageUrl;
     private String content;
-    private Long userId;
+    private String userId;
     private int status;
     private String createdBy;
     private Timestamp createdDate;

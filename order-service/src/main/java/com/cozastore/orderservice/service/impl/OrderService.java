@@ -35,7 +35,7 @@ public class OrderService implements IOrderService {
     @Async
     @Override
     @Transactional(readOnly = true)
-    public CompletableFuture<ResponseOutput> getAllOrder(Long userId ,int page, int limit, HttpServletRequest request) {
+    public CompletableFuture<ResponseOutput> getAllOrder(String userId ,int page, int limit, HttpServletRequest request) {
         return CompletableFuture.supplyAsync(
                 () -> {
                     if (!userClient.checkUserId(request.getHeader("Authorization") ,userId)){

@@ -8,6 +8,6 @@ import java.util.concurrent.CompletableFuture;
 
 public interface IOrderService {
 
-    CompletableFuture<ResponseOutput> getAllOrder(Long userId, int page, int limit, HttpServletRequest request);
+    CompletableFuture<ResponseOutput> getAllOrder(String userId, int page, int limit, HttpServletRequest request);
     CompletableFuture<Void> createOrder(OrderDTO orderDTO, HttpServletRequest request);
 }

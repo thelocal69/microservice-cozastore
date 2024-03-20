@@ -27,7 +27,7 @@ public class CartController {
     @ResponseStatus(HttpStatus.OK)
     @Transactional(readOnly = true)
     public CompletableFuture<?> getAllCart(
-            @RequestParam Long userId,
+            @RequestParam String userId,
             @RequestParam int page,
             @RequestParam int limit
     ){

@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public interface ICartRepository extends MongoRepository<CartEntity, String> {
-    List<CartEntity> findAllByUserId(Long userId, Pageable pageable);
-    int countAllByUserId(Long userId);
-    CartEntity findOneByIdAndUserId(String id, Long userId);
+    List<CartEntity> findAllByUserId(String userId, Pageable pageable);
+    int countAllByUserId(String userId);
+    CartEntity findOneByIdAndUserId(String id, String userId);
 }
