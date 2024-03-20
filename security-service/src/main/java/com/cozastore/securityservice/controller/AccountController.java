@@ -88,4 +88,5 @@ public class AccountController {
         log.info("Gen access token is completed !");
         return this.accountService.genAccessToken(accessRefreshTokenDTO);
     }
+
 }

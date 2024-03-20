@@ -5,8 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface IUserRepository extends JpaRepository<UserEntity, String> {
+public interface IUserRepository extends JpaRepository<UserEntity, Long> {
     UserEntity findByEmailAndStatus(String email, int status);
     Boolean existsByEmailAndStatus(String email, int status);
     UserEntity findByEmail(String email);
+    UserEntity findOneById(Long id);
+
 }

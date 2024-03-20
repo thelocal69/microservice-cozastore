@@ -1,18 +1,12 @@
 spring:
   application:
     name: user-service
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://${MYSQL_HOST:localhost}:3306/cozastore_security_service}
-    username: root
-    password: ${MYSQL_ROOT_PASSWORD:618619}
-  jpa:
-    hibernate:
-      ddl-auto: none
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
-    open-in-view: false
+  data:
+    mongodb:
+      uri: ${SPRING_DATA_USER_DB_URI:mongodb://localhost:27017/cozastore-user-service}
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
 
 server:
   port: ${USER.PORT:8083}
@@ -26,3 +20,19 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:${EUREKA.PORT:8761}/eureka
 
+rabbitmq:
+  queue:
+    name_changepwd: user.password.queue
+    name_ban: user.ban.queue
+  exchange:
+    name: topic.exchange
+  routing:
+    key_pwd: /access/pwd
+    key_ban: /access/ban
+  account:
+    queue:
+      name_register: user.register.queue
+    exchange:
+      name: register.exchange
+    routing:
+      key_register: /account/register

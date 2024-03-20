@@ -1,4 +1,4 @@
-package com.cozastore.cartservice.config;
+package com.cozastore.userservice.config;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Configuration;
@@ -14,14 +14,14 @@ import java.util.Date;
 import java.util.List;
 
 @Configuration
-@EnableMongoRepositories(basePackages = "com.cozastore.cartservice.repository")
+@EnableMongoRepositories(basePackages = "com.cozastore.userservice.repository")
 @EnableMongoAuditing()
 public class MongoAuditingConfig extends AbstractMongoClientConfiguration {
 
     @NotNull
     @Override
     protected String getDatabaseName() {
-        return "cozastore-cart-service";
+        return "cozastore-user-service";
     }
 
     @NotNull

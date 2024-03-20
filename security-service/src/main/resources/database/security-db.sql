@@ -10,14 +10,9 @@ CREATE TABLE roles(
 
 CREATE TABLE users(
                       id bigint auto_increment,
-                      avatar_url varchar(255),
-                      first_name varchar(155),
-                      last_name varchar(155),
-                      full_name varchar(255),
                       username varchar(255),
                       password varchar(255),
                       email varchar(255),
-                      phone varchar(11),
                       status int not null ,
                       enable tinyint not null ,
                       role_id bigint not null ,

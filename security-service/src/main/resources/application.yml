@@ -13,6 +13,9 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
     open-in-view: false
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
 
 server:
   port: ${SECURITY.PORT:8085}
@@ -21,6 +24,23 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:${EUREKA.PORT:8761}/eureka
+
+rabbitmq:
+  queue:
+    name_register: user.register.queue
+  exchange:
+    name: register.exchange
+  routing:
+    key_register: /account/register
+  user:
+    queue:
+      name_changepwd: user.password.queue
+      name_ban: user.ban.queue
+    exchange:
+      name: topic.exchange
+    routing:
+      key_pwd: /access/pwd
+      key_ban: /access/ban
 
 jwt:
   access-token-expiration: 18000000000

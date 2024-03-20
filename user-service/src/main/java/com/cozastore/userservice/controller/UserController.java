@@ -5,11 +5,14 @@ import com.cozastore.userservice.dto.BanUserDTO;
 import com.cozastore.userservice.dto.ChangePasswordDTO;
 import com.cozastore.userservice.dto.UserDetailDTO;
 import com.cozastore.userservice.service.IUserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -34,28 +37,29 @@ public class UserController {
     }
 
     @RequiredAuthorization("ROLE_USER")
-    @GetMapping("/profile/{id}")
+    @GetMapping("/profile")
     @ResponseStatus(HttpStatus.OK)
     @Transactional(readOnly = true)
-    public CompletableFuture<?> getProfile(@PathVariable Long id){
+    public CompletableFuture<?> getProfile(){
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         log.info("Get profile is completed");
-        return userService.getInformationUser(id);
+        return userService.getInformationUser(request);
     }
 
-    @RequiredAuthorization("ROLE_USER")
+    @RequiredAuthorization("ROLE_ADMIN")
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Transactional(readOnly = true)
-    public CompletableFuture<?> getUserById(@PathVariable Long id){
+    public CompletableFuture<?> getUserById(@PathVariable String id){
         log.info("Get user is completed");
         return userService.getUserById(id);
     }
 
-    @RequiredAuthorization("ROLE_USER")
+    @RequiredAuthorization("ROLE_ADMIN")
     @GetMapping("/check/{userId}")
     @ResponseStatus(HttpStatus.OK)
     @Transactional(readOnly = true)
-    public CompletableFuture<?> checkUserId(@PathVariable Long userId){
+    public CompletableFuture<?> checkUserId(@PathVariable String userId){
         log.info("Check user is completed");
         return userService.getIdUser(userId);
     }
@@ -65,8 +69,9 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional(rollbackFor = Exception.class)
     public CompletableFuture<?> editProfile(@RequestBody UserDetailDTO userDetailDTO){
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         log.info("Edit profile is completed");
-        return userService.editProfileUser(userDetailDTO);
+        return userService.editProfileUser(userDetailDTO, request);
     }
 
     @RequiredAuthorization("ROLE_USER")
@@ -74,8 +79,9 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional(rollbackFor = Exception.class)
     public CompletableFuture<?> changePassword(@RequestBody ChangePasswordDTO changePasswordDTO){
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         log.info("Change password is completed");
-        return userService.changePassword(changePasswordDTO);
+        return userService.changePassword(changePasswordDTO, request);
     }
 
     @RequiredAuthorization("ROLE_ADMIN")

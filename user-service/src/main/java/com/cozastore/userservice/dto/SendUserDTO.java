@@ -7,9 +7,10 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChangePasswordDTO {
+public class SendUserDTO {
+    private Long id;
+    private String username;
     private String email;
-    private String currentPassword;
-    private String newPassword;
-    private String confirmPassword;
+    private int status;
+    private boolean enable;
 }

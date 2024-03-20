@@ -1,22 +1,23 @@
 package com.cozastore.userservice.service.impl;
 
 import com.cozastore.userservice.converter.UserConverter;
-import com.cozastore.userservice.dto.BanUserDTO;
-import com.cozastore.userservice.dto.ChangePasswordDTO;
-import com.cozastore.userservice.dto.UserDTO;
-import com.cozastore.userservice.dto.UserDetailDTO;
+import com.cozastore.userservice.dto.*;
 import com.cozastore.userservice.entity.UserEntity;
-import com.cozastore.userservice.exception.AccountException;
 import com.cozastore.userservice.exception.NotFoundException;
+import com.cozastore.userservice.feign.AuthClient;
 import com.cozastore.userservice.payload.ResponseOutput;
-import com.cozastore.userservice.repository.IUserRepository;
+import com.cozastore.userservice.payload.ResponseToken;
+import com.cozastore.userservice.producer.DataProducer;
+import com.cozastore.userservice.repository.IUserDetailRepository;
 import com.cozastore.userservice.service.IUserService;
+import com.google.gson.Gson;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,9 +30,93 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class UserService implements IUserService {
 
-    private final IUserRepository userRepository;
+    private final DataProducer dataProducer;
     private final UserConverter userConverter;
-    private final PasswordEncoder passwordEncoder;
+    private final IUserDetailRepository userDetailRepository;
+    private final AuthClient authClient;
+    private final Gson gson;
+    @Value("${rabbitmq.exchange.name}")
+    private String exchange;
+    @Value("${rabbitmq.routing.key_pwd}")
+    private String routingKeyPwd;
+    @Value("${rabbitmq.routing.key_ban}")
+    private String routingKeyBan;
+
+
+    @Async
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CompletableFuture<Void> changePassword(ChangePasswordDTO changePasswordDTO, HttpServletRequest request) {
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    final String requestTokenHeader = request.getHeader("Authorization");
+                    String email = "";
+                    if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
+                        String token = requestTokenHeader.substring(7);
+                        ResponseToken data = authClient.getData(new TokenDTO(token));
+                        email = data.getEmail();
+                    }
+                    changePasswordDTO.setEmail(email);
+                    String message = gson.toJson(
+                            changePasswordDTO
+                    );
+                    this.dataProducer.sendMessage(
+                            exchange,
+                            routingKeyPwd,
+                            message);
+                    log.info("Change password successfully !");
+                    return null;
+                }
+        );
+    }
+
+    @Async
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CompletableFuture<String> editProfileUser(UserDetailDTO userDetailDTO, HttpServletRequest request) {
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    final String requestTokenHeader = request.getHeader("Authorization");
+                    String email = "";
+                    if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
+                        String token = requestTokenHeader.substring(7);
+                        ResponseToken data = authClient.getData(new TokenDTO(token));
+                        email = data.getEmail();
+                    }
+                    UserEntity user = userDetailRepository.findOneByEmail(email);
+                    if (user == null){
+                        log.info("User not found !");
+                        return  "User not found !";
+                    }
+                    this.userDetailRepository.save(
+                            userConverter.toUserEntity(
+                                    userDetailDTO, user
+                            )
+                    );
+                    log.info("Edit user info in completed !");
+                    return "Edit user info in completed !";
+                }
+        );
+    }
+
+    @Async
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CompletableFuture<Void> banUser(BanUserDTO banUserDTO) {
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    String message = gson.toJson(
+                            banUserDTO
+                    );
+                    this.dataProducer.sendMessage(
+                            exchange,
+                            routingKeyBan,
+                            message
+                    );
+                    return null;
+                }
+        );
+    }
 
     @Async
     @Override
@@ -41,13 +126,13 @@ public class UserService implements IUserService {
                 () -> {
                     Pageable pageable = PageRequest.of(page - 1, limit);
                     List<UserDTO> userDTOList = userConverter.toUserDTOList(
-                            userRepository.findAll(pageable).getContent()
+                            userDetailRepository.findAll(pageable).getContent()
                     );
                     if (userDTOList.isEmpty()){
                         log.info("List user is empty !");
                         throw new NotFoundException("List user is empty !");
                     }
-                    int totalItem = (int) userRepository.count();
+                    int totalItem = (int) userDetailRepository.count();
                     int totalPage = (int) Math.ceil((double) totalItem / limit);
                     log.info("List user is completed !");
                     return new ResponseOutput(
@@ -63,98 +148,25 @@ public class UserService implements IUserService {
     @Async
     @Override
     @Transactional(readOnly = true)
-    public CompletableFuture<UserDTO> getUserById(Long id) {
+    public CompletableFuture<UserDetailDTO> getInformationUser(HttpServletRequest request) {
         return CompletableFuture.supplyAsync(
                 () -> {
-                    if (!userRepository.existsById(id)){
-                        log.info("User not found !");
-                        throw new NotFoundException("User not found !");
+                    final String requestTokenHeader = request.getHeader("Authorization");
+                    String email = "";
+                    if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
+                        String token = requestTokenHeader.substring(7);
+                        ResponseToken data = authClient.getData(new TokenDTO(token));
+                        email = data.getEmail();
                     }
-                    log.info("Get user info is completed !");
-                    return userConverter.toUserDTO(
-                            Objects.requireNonNull(userRepository.findById(id).orElse(null))
-                    );
-                }
-        );
-    }
-
-    @Async
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public CompletableFuture<String> changePassword(ChangePasswordDTO changePasswordDTO) {
-        return CompletableFuture.supplyAsync(
-                () -> {
-                    UserEntity user = userRepository.findOneById(changePasswordDTO.getId());
-                    if (!(passwordEncoder.matches(changePasswordDTO.getCurrentPassword(), user.getPassword()))){
-                        log.info("Wrong password !");
-                        throw new AccountException("Wrong password !");
-                    }
-                    if (!(changePasswordDTO.getNewPassword().equals(changePasswordDTO.getConfirmPassword()))){
-                        log.info("Password won't match !");
-                        throw new AccountException("Password won't match !");
-                    }
-                    //update new password
-                    user.setPassword(passwordEncoder.encode(changePasswordDTO.getConfirmPassword()));
-                    this.userRepository.save(user);
-                    log.info("Change password successfully !");
-                    return "Change password successfully !";
-                }
-        );
-    }
-
-    @Async
-    @Override
-    @Transactional(readOnly = true)
-    public CompletableFuture<UserDetailDTO> getInformationUser(Long id) {
-        return CompletableFuture.supplyAsync(
-                () -> {
-                    if (!userRepository.existsById(id)){
+                    UserEntity user = userDetailRepository.findOneByEmail(email);
+                    if (user == null){
                         log.info("User not found !");
                         throw new NotFoundException("User not found !");
                     }
                     log.info("Get user info is completed !");
                     return userConverter.toUserDetailDTO(
-                            userRepository.findOneById(id)
+                            user
                     );
-                }
-        );
-    }
-
-    @Async
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public CompletableFuture<String> editProfileUser(UserDetailDTO userDetailDTO) {
-        return CompletableFuture.supplyAsync(
-                () -> {
-                    if (!userRepository.existsById(userDetailDTO.getId())){
-                        log.info("User not found !");
-                        return  "User not found !";
-                    }
-                    UserEntity user = userRepository.findOneById(userDetailDTO.getId());
-                    this.userRepository.save(
-                            userConverter.toUserEntity(
-                                    userDetailDTO, user
-                            )
-                    );
-                    log.info("Edit user info in completed !");
-                    return "Edit user info in completed !";
-                }
-        );
-    }
-
-    @Async
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public CompletableFuture<Boolean> banUser(BanUserDTO banUserDTO) {
-        return CompletableFuture.supplyAsync(
-                () -> {
-                        UserEntity user = userRepository.findById(banUserDTO.getId()).orElse(null);
-                        if (user != null){
-                            user.setStatus(banUserDTO.getStatus());
-                            this.userRepository.save(user);
-                            return true;
-                        }
-                        return false;
                 }
         );
     }
@@ -162,15 +174,31 @@ public class UserService implements IUserService {
     @Async
     @Override
     @Transactional(readOnly = true)
-    public CompletableFuture<Boolean> getIdUser(Long id) {
+    public CompletableFuture<Boolean> getIdUser(String id) {
         return CompletableFuture.supplyAsync(
                 () -> {
-                    if (!userRepository.existsById(id)){
+                    if (!userDetailRepository.existsById(id)){
                         log.info("User id is not exist !");
                         throw new NotFoundException("User id is not exist !");
                     }
                     log.info("User id is existed !");
-                    return userRepository.existsById(id);
+                    return userDetailRepository.existsById(id);
+                }
+        );
+    }
+
+    @Override
+    public CompletableFuture<UserDTO> getUserById(String id) {
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    if (!userDetailRepository.existsById(id)){
+                        log.info("User not found !");
+                        throw new NotFoundException("User not found !");
+                    }
+                    log.info("Get user info is completed !");
+                    return userConverter.toUserDTO(
+                            Objects.requireNonNull(userDetailRepository.findById(id).orElse(null))
+                    );
                 }
         );
     }

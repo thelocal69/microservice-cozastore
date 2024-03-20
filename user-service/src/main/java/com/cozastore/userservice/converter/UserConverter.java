@@ -1,5 +1,6 @@
 package com.cozastore.userservice.converter;
 
+import com.cozastore.userservice.dto.SendUserDTO;
 import com.cozastore.userservice.dto.UserDTO;
 import com.cozastore.userservice.dto.UserDetailDTO;
 import com.cozastore.userservice.entity.UserEntity;
@@ -57,6 +58,21 @@ public class UserConverter {
         user.setUsername(userDetailDTO.getUsername());
         user.setPhone(userDetailDTO.getPhone());
         return user;
+    }
+
+    public UserEntity toUserEntity(SendUserDTO sendUserDTO){
+        UserEntity user = new UserEntity();
+        user.setUsername(sendUserDTO.getUsername());
+        user.setEmail(sendUserDTO.getEmail());
+        user.setAvatarUrl("http://res.cloudinary.com/detvyr8w4/image/upload/v1710460378/lej4s77f8pbp4c9bs84v.pnghttp://res.cloudinary.com/detvyr8w4/image/upload/v1710460378/lej4s77f8pbp4c9bs84v.png");
+        user.setFullName("");
+        user.setFirstName("");
+        user.setLastName("");
+        user.setPhone("");
+        user.setStatus(sendUserDTO.getStatus());
+        user.setEnable(sendUserDTO.isEnable());
+        user.setUserId(sendUserDTO.getId());
+        return  user;
     }
 
 }

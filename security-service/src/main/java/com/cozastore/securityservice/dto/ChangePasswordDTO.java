@@ -1,4 +1,4 @@
-package com.cozastore.userservice.dto;
+package com.cozastore.securityservice.dto;
 
 import lombok.*;
 

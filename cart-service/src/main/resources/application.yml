@@ -3,7 +3,7 @@ spring:
     name: cart-service
   data:
     mongodb:
-      uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/cozastore-cart-service}
+      uri: ${SPRING_DATA_CART_DB_URI:mongodb://localhost:27017/cozastore-cart-service}
 
 server:
   port: ${CART.PORT:8086}

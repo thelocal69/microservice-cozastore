@@ -11,6 +11,7 @@ import com.cozastore.securityservice.exception.ForbiddenException;
 import com.cozastore.securityservice.exception.NotFoundException;
 import com.cozastore.securityservice.payload.ResponseAuthentication;
 import com.cozastore.securityservice.payload.ResponseToken;
+import com.cozastore.securityservice.producer.DataProducer;
 import com.cozastore.securityservice.repository.IRefreshTokenRepository;
 import com.cozastore.securityservice.repository.IRoleRepository;
 import com.cozastore.securityservice.repository.IUserRepository;
@@ -21,6 +22,7 @@ import com.google.gson.Gson;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -53,6 +55,11 @@ public class AccountService implements IAccountService {
     private final JwtUtil jwtUtil;
     private final Gson gson;
     private final PasswordEncoder passwordEncoder;
+    private final DataProducer dataProducer;
+    @Value("${rabbitmq.exchange.name}")
+    private String exchange;
+    @Value("${rabbitmq.routing.key_register}")
+    private String routingKey;
 
     @Async
     @Override
@@ -79,6 +86,7 @@ public class AccountService implements IAccountService {
             );
             VerificationTokenEntity verificationToken = new VerificationTokenEntity(verifyCode.substring(0, 6), user);
             this.verifyTokenRepository.save(verificationToken);
+            log.info("Register is completed !");
             return null;
         });
     }
@@ -217,6 +225,12 @@ public class AccountService implements IAccountService {
                     String verificationResult = validateCode(verificationToken.getToken());
                     if (verificationResult.equalsIgnoreCase("Valid")){
                         log.info("Email verified successfully. Now you can login to your account");
+                        UserEntity userEntity = userRepository.findByEmail(verificationToken.getUser().getEmail());
+                        SendUserDTO sendUserDTO = accountConverter.toSendUserDTO(userEntity);
+                        String message = gson.toJson(
+                                sendUserDTO
+                        );
+                        this.dataProducer.sendMessage(exchange, routingKey, message);
                         return "Email verified successfully. Now you can login to your account";
                     }
                     log.info("Invalid verification token !");
