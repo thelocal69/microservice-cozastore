@@ -64,9 +64,9 @@ public class OrderService implements IOrderService {
                                 .totalPage(totalPage)
                                 .data(orderDTOList)
                                 .build();
-                        this.redisUtil.saveToRedis(
-                                userId, "getOrderUser", page, limit, dataDB
-                        );
+                        if (dataDB != null){
+                            this.redisUtil.saveToRedis(userId, "getOrderUser", page, limit, dataDB);
+                        }
                         return dataDB;
                     }
                     log.info("Get list order is completed !");

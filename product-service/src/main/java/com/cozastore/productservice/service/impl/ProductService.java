@@ -85,7 +85,9 @@ public class ProductService implements IProductService {
                                 .totalPage(totalPage)
                                 .data(productDTOList)
                                 .build();
-                        this.redisUtil.saveToRedis(categoryId, "getAllProductCategory", page, limit, dataDB);
+                        if(dataDB != null){
+                            this.redisUtil.saveToRedis(categoryId, "getAllProductCategory", page, limit, dataDB);
+                        }
                         return dataDB;
                     }
                     log.info("Get all product by category is completed !");

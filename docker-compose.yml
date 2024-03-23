@@ -1,0 +1,98 @@
+version: '3'
+services:
+  cozastore-product-service:
+    image: 87d761c40e65/cozastore-product-service:latest
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/
+      RABBIT_MQ_HOST: rabbitmq
+      EUREKA_HOST: cozastore-discovery-server-service
+      GATE_WAY_HOST: cozastore-api-gateway-service
+    networks:
+      - cozastore-network
+
+  cozastore-order-service:
+    image: 0353486363/cozastore-product-service:latest
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql8-container:3306/cozastoreVault
+      RABBIT_MQ_HOST: rabbitmq
+      EUREKA_HOST: cozastore-discovery-server-service
+      GATE_WAY_HOST: cozastore-api-gateway-service
+    networks:
+      - cozastore-network
+
+  mysql:
+    image: mysql:latest
+    container_name: cozastore_mysql_db
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 618619
+      MYSQL_DATABASE: cozastoreVault
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
+    networks:
+      - cozastore-network
+
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: cozastore_rabbitMQ
+    restart: always
+    ports:
+      - "5672:5672"
+    networks:
+      - cozastore-network
+
+  redis:
+    image: redis:latest
+    container_name: cozastore_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis-data:/data
+    networks:
+      - cozastore-network
+
+  mongo:
+    image: mongo:latest
+    container_name: cozastore_mongo_db
+    restart: always
+    ports:
+      - "27017:27017"
+    networks:
+      - cozastore-network
+
+  loki:
+    image: grafana/loki:latest
+    extra_hosts: [ 'host.docker.internal:host-gateway' ]
+    command: [ "-config.file=/etc/loki/local-config.yaml" ]
+    ports:
+      - "3100:3100"                                   # loki needs to be exposed so it receives logs
+    environment:
+      - JAEGER_AGENT_HOST=tempo
+      - JAEGER_ENDPOINT=http://tempo:14268/api/traces # send traces to Tempo
+      - JAEGER_SAMPLER_TYPE=const
+      - JAEGER_SAMPLER_PARAM=1
+    networks:
+      - cozastore-network
+
+  tempo:
+    image: grafana/tempo:main-0c1eb27
+    extra_hosts: [ 'host.docker.internal:host-gateway' ]
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./docker/tempo/tempo.yaml:/etc/tempo.yaml:ro
+      - ./tempo-data:/tmp/tempo
+    ports:
+      - "14268"  # jaeger ingest
+      - "9411:9411" # zipkin
+      - "4317:4317" # otlp grpc ingest
+      - "4318:4318" # otlp http ingest
+    networks:
+      - cozastore-network
+
+networks:
+  cozastore-network:
+    driver: bridge
