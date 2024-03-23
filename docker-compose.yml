@@ -1,26 +1,174 @@
 version: '3'
 services:
   cozastore-product-service:
-    image: 87d761c40e65/cozastore-product-service:latest
+    build:
+      context: ./
+      dockerfile: product-service
+    ports:
+      - "8080:8080"
+    container_name: cozastore-product-service
     environment:
-      SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/
-      RABBIT_MQ_HOST: rabbitmq
-      EUREKA_HOST: cozastore-discovery-server-service
-      GATE_WAY_HOST: cozastore-api-gateway-service
+      SPRING_DATA_MONGODB_URI: mongodb://cozastore_mongo_db:27017/
+      REDIS_HOST: cozastore_redis
+      EUREKA_HOST: cozastore-discovery-server
+      GATE_WAY_HOST: cozastore-api-gateway
+    depends_on:
+      - cozastore_mongo_db
     networks:
       - cozastore-network
 
   cozastore-order-service:
-    image: 0353486363/cozastore-product-service:latest
+    build:
+      context: ./
+      dockerfile: order-service
+    ports:
+      - "8081:8081"
+    container_name: cozastore-order-service
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql8-container:3306/cozastoreVault
-      RABBIT_MQ_HOST: rabbitmq
-      EUREKA_HOST: cozastore-discovery-server-service
-      GATE_WAY_HOST: cozastore-api-gateway-service
+      SPRING_DATASOURCE_URL: jdbc:mysql://cozastore_mysql_db:3306/cozastoreVault
+      REDIS_HOST: cozastore_redis
+      EUREKA_HOST: cozastore-discovery-server
+      GATE_WAY_HOST: cozastore-api-gateway
+    depends_on:
+      - cozastore_mysql_db
     networks:
       - cozastore-network
 
-  mysql:
+  cozastore-blog-service:
+    build:
+      context: ./
+      dockerfile: blog-service
+    ports:
+      - "8084:8084"
+    container_name: cozastore-blog-service
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://cozastore_mongo_db:27017/
+      EUREKA_HOST: cozastore-discovery-server
+      GATE_WAY_HOST: cozastore-api-gateway
+    depends_on:
+      - cozastore_mongo_db
+    networks:
+      - cozastore-network
+
+  cozastore-carousel-service:
+    build:
+      context: ./
+      dockerfile: carousel-service
+    ports:
+      - "8082:8082"
+    container_name: cozastore-carousel-service
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://cozastore_mongo_db:27017/
+      EUREKA_HOST: cozastore-discovery-server
+      GATE_WAY_HOST: cozastore-api-gateway
+    depends_on:
+      - cozastore_mongo_db
+    networks:
+      - cozastore-network
+
+  cozastore-cart-service:
+    build:
+      context: ./
+      dockerfile: cart-service
+    ports:
+      - "8086:8086"
+    container_name: cozastore-cart-service
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://cozastore_mongo_db:27017/
+      EUREKA_HOST: cozastore-discovery-server
+      GATE_WAY_HOST: cozastore-api-gateway
+    depends_on:
+      - cozastore_mongo_db
+    networks:
+      - cozastore-network
+
+  cozastore-media-service:
+    build:
+      context: ./
+      dockerfile: media-service
+    ports:
+      - "8089:8089"
+    container_name: cozastore-media-service
+    environment:
+      EUREKA_HOST: cozastore-discovery-server
+      GATE_WAY_HOST: cozastore-api-gateway
+    networks:
+      - cozastore-network
+
+  cozastore-security-service:
+    build:
+      context: ./
+      dockerfile: security-service
+    ports:
+      - "8085:8085"
+    container_name: cozastore-security-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://cozastore_mysql_db:3306/cozastoreVault
+      RABBIT_MQ_HOST: rabbitmq
+      EUREKA_HOST: cozastore-discovery-server
+      GATE_WAY_HOST: cozastore-api-gateway
+    depends_on:
+      - cozastore_mysql_db
+    networks:
+      - cozastore-network
+
+  cozastore-user-service:
+    build:
+      context: ./
+      dockerfile: user-service
+    ports:
+      - "8083:8083"
+    container_name: cozastore-user-service
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://cozastore_mongo_db:27017/
+      RABBIT_MQ_HOST: rabbitmq
+      EUREKA_HOST: cozastore-discovery-server
+      GATE_WAY_HOST: cozastore-api-gateway
+    depends_on:
+      - cozastore_mongo_db
+    networks:
+      - cozastore-network
+
+  cozastore-api-gateway:
+    build:
+      context: ./
+      dockerfile: api-gateway
+    ports:
+      - "9000:9000"
+    container_name: cozastore-api-gateway
+    environment:
+      EUREKA_HOST: cozastore-discovery-server
+      GATE_WAY_HOST: cozastore-api-gateway
+    networks:
+      - cozastore-network
+
+  cozastore-discovery-server:
+    build:
+      context: ./
+      dockerfile: discovery-server
+    ports:
+      - "8761:8761"
+    container_name: cozastore-discovery-server
+    environment:
+      EUREKA_HOST: cozastore-discovery-server
+      GATE_WAY_HOST: cozastore-api-gateway
+    networks:
+      - cozastore-network
+
+  cozastore-search-service:
+    build:
+      context: ./
+      dockerfile: search-service
+    ports:
+      - "8087:8087"
+    container_name: cozastore-search-service
+    environment:
+      EUREKA_HOST: cozastore-discovery-server
+      GATE_WAY_HOST: cozastore-api-gateway
+    networks:
+      - cozastore-network
+
+  cozastore_mysql_db:
     image: mysql:latest
     container_name: cozastore_mysql_db
     command: --default-authentication-plugin=mysql_native_password
@@ -35,7 +183,7 @@ services:
     networks:
       - cozastore-network
 
-  rabbitmq:
+  cozastore_rabbitMQ:
     image: rabbitmq:3.12-management
     container_name: cozastore_rabbitMQ
     restart: always
@@ -44,7 +192,7 @@ services:
     networks:
       - cozastore-network
 
-  redis:
+  cozastore_redis:
     image: redis:latest
     container_name: cozastore_redis
     restart: always
@@ -55,7 +203,7 @@ services:
     networks:
       - cozastore-network
 
-  mongo:
+  cozastore_mongo_db:
     image: mongo:latest
     container_name: cozastore_mongo_db
     restart: always
