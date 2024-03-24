@@ -1,7 +1,7 @@
 version: '3'
 services:
   cozastore-product-service:
-    image: thelocal69/cozastore_product_service:latest
+    image: thelocal69/cozastore-product-service:latest
     ports:
       - "8080:8080"
     container_name: cozastore-product-service
@@ -16,7 +16,7 @@ services:
       - cozastore-network
 
   cozastore-order-service:
-    image: thelocal69/cozastore_order_service:latest
+    image: thelocal69/cozastore-order-service:latest
     ports:
       - "8081:8081"
     container_name: cozastore-order-service
@@ -31,7 +31,7 @@ services:
       - cozastore-network
 
   cozastore-blog-service:
-    image: thelocal69/cozastore_blog_service:latest
+    image: thelocal69/cozastore-blog-service:latest
     ports:
       - "8084:8084"
     container_name: cozastore-blog-service
@@ -45,7 +45,7 @@ services:
       - cozastore-network
 
   cozastore-carousel-service:
-    image: thelocal69/cozastore_carousel_service:latest
+    image: thelocal69/cozastore-carousel-service:latest
     ports:
       - "8082:8082"
     container_name: cozastore-carousel-service
@@ -59,7 +59,7 @@ services:
       - cozastore-network
 
   cozastore-cart-service:
-    image: thelocal69/cozastore_cart_service:latest
+    image: thelocal69/cozastore-cart-service:latest
     ports:
       - "8086:8086"
     container_name: cozastore-cart-service
@@ -73,7 +73,7 @@ services:
       - cozastore-network
 
   cozastore-media-service:
-    image: thelocal69/cozastore_media_service:latest
+    image: thelocal69/cozastore-media-service:latest
     ports:
       - "8089:8089"
     container_name: cozastore-media-service
@@ -84,7 +84,7 @@ services:
       - cozastore-network
 
   cozastore-security-service:
-    image: thelocal69/cozastore_security_service:latest
+    image: thelocal69/cozastore-security-service:latest
     ports:
       - "8085:8085"
     container_name: cozastore-security-service
@@ -99,7 +99,7 @@ services:
       - cozastore-network
 
   cozastore-user-service:
-    image: thelocal69/cozastore_user_service:latest
+    image: thelocal69/cozastore-user-service:latest
     ports:
       - "8083:8083"
     container_name: cozastore-user-service
@@ -114,7 +114,7 @@ services:
       - cozastore-network
 
   cozastore-api-gateway:
-    image: thelocal69/cozastore_api_gateway:latest
+    image: thelocal69/cozastore-api-gateway:latest
     ports:
       - "9000:9000"
     container_name: cozastore-api-gateway
@@ -125,7 +125,7 @@ services:
       - cozastore-network
 
   cozastore-discovery-server:
-    image: thelocal69/cozastore_discovery_server:latest
+    image: thelocal69/cozastore-discovery-server:latest
     ports:
       - "8761:8761"
     container_name: cozastore-discovery-server
@@ -136,7 +136,7 @@ services:
       - cozastore-network
 
   cozastore-search-service:
-    image: thelocal69/cozastore_search_service:latest
+    image: thelocal69/cozastore-search-service:latest
     ports:
       - "8087:8087"
     container_name: cozastore-search-service
