@@ -25,7 +25,7 @@ services:
       - "8081:8081"
     container_name: cozastore-order-service
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://cozastore_mysql_db:3306/cozastoreVault
+      SPRING_DATASOURCE_URL: jdbc:mysql://cozastore_mysql_db:3307/cozastoreVault
       REDIS_HOST: cozastore_redis
       EUREKA_HOST: cozastore-discovery-server
       GATE_WAY_HOST: cozastore-api-gateway
@@ -103,7 +103,7 @@ services:
       - "8085:8085"
     container_name: cozastore-security-service
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://cozastore_mysql_db:3306/cozastoreVault
+      SPRING_DATASOURCE_URL: jdbc:mysql://cozastore_mysql_db:3307/cozastoreVault
       RABBIT_MQ_HOST: rabbitmq
       EUREKA_HOST: cozastore-discovery-server
       GATE_WAY_HOST: cozastore-api-gateway
@@ -177,7 +177,7 @@ services:
       MYSQL_ROOT_PASSWORD: 618619
       MYSQL_DATABASE: cozastoreVault
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - ./init:/docker-entrypoint-initdb.d
     networks:
@@ -212,10 +212,31 @@ services:
     networks:
       - cozastore-network
 
+  prometheus:
+    image: prom/prometheus
+    container_name: cozastore_prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus-test/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+
+  grafana:
+    image: grafana/grafana-enterprise
+    container_name: cozastore_grafana
+    extra_hosts: [ 'host.docker.internal:host-gateway' ]
+    restart: unless-stopped
+    ports:
+      - '4040:3000'
+
   loki:
     image: grafana/loki:latest
+    container_name: cozastore_loki_log
     extra_hosts: [ 'host.docker.internal:host-gateway' ]
     command: [ "-config.file=/etc/loki/local-config.yaml" ]
+    restart: always
     ports:
       - "3100:3100"                                   # loki needs to be exposed so it receives logs
     environment:
@@ -228,11 +249,13 @@ services:
 
   tempo:
     image: grafana/tempo:main-0c1eb27
+    container_name: cozastore_tempo
     extra_hosts: [ 'host.docker.internal:host-gateway' ]
     command: [ "-config.file=/etc/tempo.yaml" ]
     volumes:
       - ./docker/tempo/tempo.yaml:/etc/tempo.yaml:ro
       - ./tempo-data:/tmp/tempo
+    restart: always
     ports:
       - "14268"  # jaeger ingest
       - "9411:9411" # zipkin
@@ -240,6 +263,23 @@ services:
       - "4318:4318" # otlp http ingest
     networks:
       - cozastore-network
+
+#  elasticsearch:
+#    image: elasticsearch:8.9.2
+#    ports:
+#      - "9200:9200"
+#    environment:
+#      - discovery.type=single-node
+#      - xpack.security.enabled=false
+#      - ES_JAVA_OPTS=-MSG -Xmx8g
+#
+#  kibana:
+#    image: kibana:8.9.2
+#    ports:
+#      - "5601:5601"
+#    environment:
+#      - ELASTICSEARCH_URL=http://elasticsearch:9200
+#      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
 
 networks:
   cozastore-network:
