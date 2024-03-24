@@ -1,9 +1,7 @@
 version: '3'
 services:
   cozastore-product-service:
-    build:
-      context: ./
-      dockerfile: product-service
+    image: thelocal69/cozastore_product_service:latest
     ports:
       - "8080:8080"
     container_name: cozastore-product-service
@@ -18,9 +16,7 @@ services:
       - cozastore-network
 
   cozastore-order-service:
-    build:
-      context: ./
-      dockerfile: order-service
+    image: thelocal69/cozastore_order_service:latest
     ports:
       - "8081:8081"
     container_name: cozastore-order-service
@@ -35,9 +31,7 @@ services:
       - cozastore-network
 
   cozastore-blog-service:
-    build:
-      context: ./
-      dockerfile: blog-service
+    image: thelocal69/cozastore_blog_service:latest
     ports:
       - "8084:8084"
     container_name: cozastore-blog-service
@@ -51,9 +45,7 @@ services:
       - cozastore-network
 
   cozastore-carousel-service:
-    build:
-      context: ./
-      dockerfile: carousel-service
+    image: thelocal69/cozastore_carousel_service:latest
     ports:
       - "8082:8082"
     container_name: cozastore-carousel-service
@@ -67,9 +59,7 @@ services:
       - cozastore-network
 
   cozastore-cart-service:
-    build:
-      context: ./
-      dockerfile: cart-service
+    image: thelocal69/cozastore_cart_service:latest
     ports:
       - "8086:8086"
     container_name: cozastore-cart-service
@@ -83,9 +73,7 @@ services:
       - cozastore-network
 
   cozastore-media-service:
-    build:
-      context: ./
-      dockerfile: media-service
+    image: thelocal69/cozastore_media_service:latest
     ports:
       - "8089:8089"
     container_name: cozastore-media-service
@@ -96,9 +84,7 @@ services:
       - cozastore-network
 
   cozastore-security-service:
-    build:
-      context: ./
-      dockerfile: security-service
+    image: thelocal69/cozastore_security_service:latest
     ports:
       - "8085:8085"
     container_name: cozastore-security-service
@@ -113,9 +99,7 @@ services:
       - cozastore-network
 
   cozastore-user-service:
-    build:
-      context: ./
-      dockerfile: user-service
+    image: thelocal69/cozastore_user_service:latest
     ports:
       - "8083:8083"
     container_name: cozastore-user-service
@@ -130,9 +114,7 @@ services:
       - cozastore-network
 
   cozastore-api-gateway:
-    build:
-      context: ./
-      dockerfile: api-gateway
+    image: thelocal69/cozastore_api_gateway:latest
     ports:
       - "9000:9000"
     container_name: cozastore-api-gateway
@@ -143,9 +125,7 @@ services:
       - cozastore-network
 
   cozastore-discovery-server:
-    build:
-      context: ./
-      dockerfile: discovery-server
+    image: thelocal69/cozastore_discovery_server:latest
     ports:
       - "8761:8761"
     container_name: cozastore-discovery-server
@@ -156,9 +136,7 @@ services:
       - cozastore-network
 
   cozastore-search-service:
-    build:
-      context: ./
-      dockerfile: search-service
+    image: thelocal69/cozastore_search_service:latest
     ports:
       - "8087:8087"
     container_name: cozastore-search-service
