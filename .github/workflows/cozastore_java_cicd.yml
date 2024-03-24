@@ -1,18 +1,67 @@
-name: Docker Image CI
+name: CI/CD
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - main  # Trigger the workflow on push events to the main branch
 
 jobs:
-
-  build:
-
+  build-and-push:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - service: cozastore-discovery-server
+            directory: discovery-server
+          - service: cozastore-api-gateway
+            directory: api-gateway
+          - service: cozastore-security-service
+            directory: security
+          - service: cozastore-user-service
+            directory: user
+          - service: cozastore-product-service
+            directory: product
+          - service: cozastore-cart-service
+            directory: cart
+          - service: cozastore-order-service
+            directory: order
+          - service: cozastore-media-service
+            directory: media
+          - service: cozastore-carousel-service
+            directory: carousel
+          - service: cozastore-blog-service
+            directory: blog
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Build with Maven
+        run: mvn clean package -DskipTests
+        working-directory: ./${{ matrix.directory }}
+
+      - name: Build Docker image
+        run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/${{ matrix.service }}:latest ./${{ matrix.directory }}
+
+      - name: Push Docker image to Docker Hub
+        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ matrix.service }}:latest
+
