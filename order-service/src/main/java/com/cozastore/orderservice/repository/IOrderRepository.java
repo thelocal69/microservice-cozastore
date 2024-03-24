@@ -9,6 +9,6 @@ import java.util.List;
 
 @Repository
 public interface IOrderRepository extends JpaRepository<OrderEntity, Long> {
-    List<OrderEntity> findAllByUserId(Long id, Pageable pageable);
-    int countAllByUserId(Long userId);
+    List<OrderEntity> findAllByUserId(String id, Pageable pageable);
+    int countAllByUserId(String userId);
 }

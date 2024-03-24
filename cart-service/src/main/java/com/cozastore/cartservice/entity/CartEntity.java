@@ -23,5 +23,5 @@ public class CartEntity extends AbstractAuditingEntity{
     @Field("product_id")
     private String productId;
     @Field(name = "user_id")
-    private Long userId;
+    private String userId;
 }

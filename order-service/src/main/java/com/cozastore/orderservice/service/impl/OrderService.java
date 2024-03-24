@@ -35,7 +35,7 @@ public class OrderService implements IOrderService {
     @Async
     @Override
     @Transactional(readOnly = true)
-    public CompletableFuture<ResponseOutput> getAllOrder(Long userId ,int page, int limit, HttpServletRequest request) {
+    public CompletableFuture<ResponseOutput> getAllOrder(String userId ,int page, int limit, HttpServletRequest request) {
         return CompletableFuture.supplyAsync(
                 () -> {
                     if (!userClient.checkUserId(request.getHeader("Authorization") ,userId)){
@@ -64,9 +64,9 @@ public class OrderService implements IOrderService {
                                 .totalPage(totalPage)
                                 .data(orderDTOList)
                                 .build();
-                        this.redisUtil.saveToRedis(
-                                userId, "getOrderUser", page, limit, dataDB
-                        );
+                        if (dataDB != null){
+                            this.redisUtil.saveToRedis(userId, "getOrderUser", page, limit, dataDB);
+                        }
                         return dataDB;
                     }
                     log.info("Get list order is completed !");

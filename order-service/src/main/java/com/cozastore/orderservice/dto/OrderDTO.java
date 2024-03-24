@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 public class OrderDTO {
     private Long id;
     private String orderNo;
-    private Long userId;
+    private String userId;
     private String productId;
     private BigDecimal price;
     private int quantity;

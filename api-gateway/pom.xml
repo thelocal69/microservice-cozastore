@@ -34,6 +34,10 @@
             <groupId>org.springframework.security</groupId>
         </dependency>
         <dependency>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+            <groupId>org.springframework.boot</groupId>
+        </dependency>
+        <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
             <version>0.11.5</version>
@@ -49,6 +53,10 @@
             <artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is preferred -->
             <version>0.11.5</version>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+            <groupId>io.micrometer</groupId>
         </dependency>
     </dependencies>
 </project>

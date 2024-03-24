@@ -4,7 +4,7 @@ USE cozastore_order_service;
 CREATE TABLE order_product(
                               id bigint auto_increment,
                               order_no varchar(255) not null unique,
-                                user_id bigint not null,
+                                user_id varchar(512) not null,
                               product_id varchar(512) not null ,
                                 status int not null ,
                               quantity int,

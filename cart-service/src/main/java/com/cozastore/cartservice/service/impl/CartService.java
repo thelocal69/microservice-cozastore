@@ -35,7 +35,7 @@ public class CartService implements ICartService {
     @Async
     @Override
     @Transactional(readOnly = true)
-    public CompletableFuture<ResponseOutput> getAll(Long userId, int page, int limit) {
+    public CompletableFuture<ResponseOutput> getAll(String userId, int page, int limit) {
         return CompletableFuture.supplyAsync(
                 () -> {
                     Pageable pageable = PageRequest.of(page - 1, limit);

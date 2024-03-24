@@ -13,7 +13,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Date;
 
 @Getter
 @Setter
@@ -28,7 +27,7 @@ public class OrderEntity{
     @Column(name = "order_no")
     private String orderNo;
     @Column(name = "user_id")
-    private Long userId;
+    private String userId;
     @Column(name = "product_id")
     private String productId;
     @Column(name = "price")

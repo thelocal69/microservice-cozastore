@@ -3,10 +3,37 @@ spring:
     name: cart-service
   data:
     mongodb:
-      uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/cozastore-cart-service}
+      uri: ${SPRING_DATA_CART_DB_URI:mongodb://localhost:27017/cozastore-cart-service}
 
 server:
   port: ${CART.PORT:8086}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  tracing:
+    sampling:
+      probability: "1.0"
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http:
+          server:
+            requests: true
+    tags:
+      application: ${spring.application.name}
+    otlp:
+      tracing:
+        endpoint: http://localhost:4318/v1/traces
+    tracing:
+      sampling:
+        probability: 1.0
+
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
 
 eureka:
   client:

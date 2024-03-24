@@ -27,7 +27,7 @@ public class OrderController {
     @ResponseStatus(HttpStatus.OK)
     @Transactional(readOnly = true)
     public CompletableFuture<?> getAllOrder(
-            @RequestParam Long userId,
+            @RequestParam String userId,
             @RequestParam int page,
             @RequestParam int limit
     ){

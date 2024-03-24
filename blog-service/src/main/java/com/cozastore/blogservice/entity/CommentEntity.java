@@ -23,7 +23,7 @@ public class CommentEntity extends AbstractAuditingEntity{
     @Field(name = "blog_id")
     private BlogEntity blogId;
     @Field(name = "user_id")
-    private Long userId;
+    private String userId;
     @Field(name = "status")
     private int status;
 }

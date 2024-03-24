@@ -25,7 +25,7 @@ public class BlogEntity extends AbstractAuditingEntity{
     @Field(name = "content")
     private String content;
     @Field(name = "user_id")
-    private Long userId;
+    private String userId;
     @Field(name = "status")
     private int status;
 }

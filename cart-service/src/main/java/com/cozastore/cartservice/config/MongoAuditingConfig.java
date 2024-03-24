@@ -21,7 +21,7 @@ public class MongoAuditingConfig extends AbstractMongoClientConfiguration {
     @NotNull
     @Override
     protected String getDatabaseName() {
-        return "cozastore-product-service";
+        return "cozastore-cart-service";
     }
 
     @NotNull
