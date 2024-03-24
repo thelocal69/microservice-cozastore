@@ -16,21 +16,21 @@ jobs:
           - service: cozastore-api-gateway
             directory: api-gateway
           - service: cozastore-security-service
-            directory: security
+            directory: security-service
           - service: cozastore-user-service
-            directory: user
+            directory: user-service
           - service: cozastore-product-service
-            directory: product
+            directory: product-service
           - service: cozastore-cart-service
-            directory: cart
+            directory: cart-service
           - service: cozastore-order-service
-            directory: order
+            directory: order-service
           - service: cozastore-media-service
-            directory: media
+            directory: media-service
           - service: cozastore-carousel-service
-            directory: carousel
+            directory: carousel-service
           - service: cozastore-blog-service
-            directory: blog
+            directory: blog-service
 
     steps:
       - name: Checkout code
