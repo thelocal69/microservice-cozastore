@@ -7,7 +7,8 @@
 - RabbitMQ
 - GitHub Actions
 - OpenTelemetry
-- Grafana, Loki, Prometheus, Tempo, Redis
+- Redis, RabbitMQ
+- Grafana, Loki, Prometheus, Tempo
 
 ## Run this project
 
@@ -22,7 +23,7 @@
 `chmod +x install.sh`
 
 ```bash
-docker-compose -f ./docker/docker-compose.yml -p docker up -d
+docker-compose -f docker-compose.yml -p docker up -d
 
 ./install.sh
 ```
