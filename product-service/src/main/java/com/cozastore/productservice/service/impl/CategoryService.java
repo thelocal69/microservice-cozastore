@@ -4,6 +4,7 @@ import com.cozastore.productservice.converter.CategoryConverter;
 import com.cozastore.productservice.dto.CategoryDTO;
 import com.cozastore.productservice.exception.BadRequestException;
 import com.cozastore.productservice.exception.NotFoundException;
+import com.cozastore.productservice.payload.ResponseObject;
 import com.cozastore.productservice.payload.ResponseOutput;
 import com.cozastore.productservice.repository.ICategoryRepository;
 import com.cozastore.productservice.service.ICategoryService;
@@ -43,6 +44,22 @@ public class CategoryService implements ICategoryService {
                 () -> new ResponseOutput(
                         page, totalPage, totalItem, categoryDTOList
                 )
+        );
+    }
+
+    @Async
+    @Override
+    @Transactional(readOnly = true)
+    public CompletableFuture<ResponseObject> getAll() {
+        return CompletableFuture.supplyAsync(
+                () -> {
+                    if (this.categoryRepository.findAll().isEmpty()){
+                        log.info("List category is empty !");
+                        throw new NotFoundException("List category is empty !");
+                    }
+                    log.info("Get list category is completed !");
+                    return ResponseObject.builder().data(this.categoryRepository.findAll()).build();
+                }
         );
     }
 
