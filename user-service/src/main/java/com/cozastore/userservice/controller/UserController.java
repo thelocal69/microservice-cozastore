@@ -55,7 +55,7 @@ public class UserController {
         return userService.getUserById(id);
     }
 
-    @RequiredAuthorization("ROLE_ADMIN")
+    @RequiredAuthorization("ROLE_USER")
     @GetMapping("/check/{userId}")
     @ResponseStatus(HttpStatus.OK)
     @Transactional(readOnly = true)

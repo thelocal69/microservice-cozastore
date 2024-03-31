@@ -52,8 +52,9 @@ public class OrderService implements IOrderService {
                     }
                     int totalItem = orderRepository.countAllByUserId(userId);
                     int totalPage = (int) Math.ceil((double) totalItem / limit);
+                    String keyName = "getOrderUser"+userId;
                     ResponseOutput dataCache = this.redisUtil.getAllRedis(
-                            userId, "getOrderUser", page, limit
+                            userId, keyName, page, limit
                     );
                     if (dataCache == null){
                         log.info("Get list order is completed !");
@@ -65,7 +66,7 @@ public class OrderService implements IOrderService {
                                 .data(orderDTOList)
                                 .build();
                         if (dataDB != null){
-                            this.redisUtil.saveToRedis(userId, "getOrderUser", page, limit, dataDB);
+                            this.redisUtil.saveToRedis(userId, keyName, page, limit, dataDB);
                         }
                         return dataDB;
                     }

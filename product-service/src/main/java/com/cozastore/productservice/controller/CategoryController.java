@@ -28,6 +28,14 @@ public class CategoryController {
        return categoryService.getAll(page, limit);
     }
 
+    @GetMapping("/getAll")
+    @ResponseStatus(HttpStatus.OK)
+    @Transactional(readOnly = true)
+    public CompletableFuture<?> getAllCategory(){
+        log.info("get list category is completed !");
+        return categoryService.getAll();
+    }
+
     @GetMapping("/{categoryId}")
     @ResponseStatus(HttpStatus.OK)
     @Transactional(readOnly = true)

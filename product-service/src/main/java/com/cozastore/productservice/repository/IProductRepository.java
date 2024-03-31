@@ -11,4 +11,6 @@ import java.util.List;
 public interface IProductRepository extends MongoRepository<ProductEntity, String> {
     List<ProductEntity> findAllByCategory_Id(String categoryId, Pageable pageable);
     int countAllByCategory_Id(String categoryId);
+    List<ProductEntity> findAllByCategory_Slug(String slug, Pageable pageable);
+    int countAllByCategory_Slug(String slug);
 }

@@ -14,6 +14,7 @@ public class CategoryConverter {
                 .builder()
                 .id(categoryModel.getId())
                 .name(categoryModel.getName())
+                .slug(categoryModel.getSlug())
                 .build();
     }
 
@@ -25,6 +26,7 @@ public class CategoryConverter {
         CategoryEntity categoryModel = new CategoryEntity();
         categoryModel.setId(categoryDTO.getId());
         categoryModel.setName(categoryDTO.getName());
+        categoryModel.setSlug(categoryDTO.getSlug());
         return categoryModel;
     }
 }

@@ -35,12 +35,12 @@ public class ProductController {
     @ResponseStatus(HttpStatus.OK)
     @Transactional(readOnly = true)
     public CompletableFuture<?> getAllProductByCategory(
-            @RequestParam String categoryId,
+            @RequestParam String slug,
             @RequestParam int page,
             @RequestParam int limit
     ){
         log.info("get all product by category is completed !");
-        return productService.getAllProductByCategory(categoryId ,page, limit);
+        return productService.getAllProductByCategorySlug(slug ,page, limit);
     }
 
     @GetMapping("/{productId}")

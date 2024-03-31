@@ -17,7 +17,7 @@ public class ProductConverter {
                 .imageUrl(productModel.getImageUrl())
                 .quantity(productModel.getQuantity())
                 .description(productModel.getDescription())
-                .category(productModel.getCategory().getName())
+                .category(productModel.getCategory().getSlug())
                 .color(productModel.getColor().getName())
                 .size(productModel.getSize().getName())
                 .build();
