@@ -20,4 +20,6 @@ public class CategoryEntity extends AbstractAuditingEntity {
     private String id;
     @Field(name = "name")
     private String name;
+    @Field(name = "slug")
+    private String slug;
 }

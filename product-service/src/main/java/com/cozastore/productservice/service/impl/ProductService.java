@@ -58,24 +58,25 @@ public class ProductService implements IProductService {
     @Async
     @Override
     @Transactional(readOnly = true)
-    public CompletableFuture<ResponseOutput> getAllProductByCategory(String categoryId, int page, int limit) {
+    public CompletableFuture<ResponseOutput> getAllProductByCategorySlug(String slug, int page, int limit) {
         return CompletableFuture.supplyAsync(
                 () -> {
-                    if (!categoryRepository.existsById(categoryId)){
+                    if (!categoryRepository.existsBySlug(slug)){
                         log.info("Category is not exist ! Cannot get all product !");
                         throw new NotFoundException("Category is not exist ! Cannot get all product !");
                     }
                     Pageable pageable = PageRequest.of(page - 1, limit);
                     List<ProductDTO> productDTOList = productConverter.toListProductDTO(
-                            productRepository.findAllByCategory_Id(categoryId ,pageable)
+                            productRepository.findAllByCategory_Slug(slug ,pageable)
                     );
                     if (productDTOList.isEmpty()){
                         log.info("List Product not found !");
                         throw new NotFoundException("List Product not found !");
                     }
-                    int totalItem = productRepository.countAllByCategory_Id(categoryId);
+                    int totalItem = productRepository.countAllByCategory_Slug(slug);
                     int totalPage = (int) Math.ceil((double) totalItem / limit);
-                    ResponseOutput dataCache = this.redisUtil.getAllRedis(categoryId, "getAllProductCategory", page, limit);
+                    String keyName = "getAllProductCategory" + slug;
+                    ResponseOutput dataCache = this.redisUtil.getAllRedis(slug, keyName, page, limit);
                     if (dataCache == null){
                         log.info("Get all product by category is completed !");
                         ResponseOutput dataDB = ResponseOutput
@@ -86,7 +87,7 @@ public class ProductService implements IProductService {
                                 .data(productDTOList)
                                 .build();
                         if(dataDB != null){
-                            this.redisUtil.saveToRedis(categoryId, "getAllProductCategory", page, limit, dataDB);
+                            this.redisUtil.saveToRedis(slug, keyName, page, limit, dataDB);
                         }
                         return dataDB;
                     }
